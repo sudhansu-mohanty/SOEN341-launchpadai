@@ -11,11 +11,12 @@ CarrerConnect is a web-based platform designed to help job seekers manage their 
 *   Having resume management, job postings, application tracking and more on the same platform will relieve stress from the users
 
 ## Technologies used </br>
-* React
-* ??
+* React (Next.js, JS)
+* Python (Backend)
+* Supabase (Auth, API)
 
 ## Setup Instructions </br>
-*  installations needed for react
+*  Install dependencies from package.json
 
 ## Proposed features </br>
 *  Swiping through job postings
