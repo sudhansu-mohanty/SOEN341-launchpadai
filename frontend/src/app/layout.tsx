@@ -1,14 +1,6 @@
 import "./globals.css";
 import type { ReactNode } from "react";
-import { DM_Sans } from "next/font/google";
 import { ScoreProvider } from "@/context/ScoreContext";
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  variable: "--font-dm-sans",
-  display: "swap",
-  weight: ["400", "500", "600", "700", "800"],
-});
 
 export const metadata = {
   title: "LaunchPadAI — Job Search & Application Tracking",
@@ -28,7 +20,15 @@ type RootLayoutProps = {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en" className={dmSans.variable}>
+    <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body className="bg-black text-white antialiased">
         <ScoreProvider>{children}</ScoreProvider>
       </body>

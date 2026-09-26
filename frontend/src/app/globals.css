@@ -2,7 +2,7 @@
 
 /* --- Theme --- */
 @theme {
-  --font-sans: var(--font-dm-sans), "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-sans: "DM Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --color-background: #000000;
   --color-surface: #0a0a0a;
   --color-surface-2: #111111;
