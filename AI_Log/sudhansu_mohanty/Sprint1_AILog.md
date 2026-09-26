@@ -77,3 +77,10 @@
   * Formatted subtasks into repository work items: **Task 4.1** (Provision private bucket with authenticated RLS policy), **Task 4.2** (Client-side drag-and-drop UI with format/size validation), and **Task 4.3** (Upload API integration and metadata persistence to profile)[cite: 5, 6].
 * **Reflection:** AI suggested the overall user need, but failed to address security, storage limits, and access controls[cite: 1]. Refining the story ourselves ensured that data isolation and RLS policies were accounted for prior to implementation[cite: 1, 5].
 * **Responsible Person:** Sudhansu Mohanty[cite: 1]
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> can you configure so as the github pages can be used for an early deploymenty
