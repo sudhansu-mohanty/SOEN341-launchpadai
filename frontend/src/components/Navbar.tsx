@@ -3,9 +3,8 @@
 import { useEffect, useState } from "react";
 
 const links = [
-  { label: "Resume Builder", href: "#" },
-  { label: "ATS Analysis", href: "#upload" },
-  { label: "Pricing", href: "#" },
+  { label: "Features", href: "#" },
+  { label: "My Resumes", href: "/dashboard/resume" },
 ];
 
 export default function Navbar() {
@@ -47,12 +46,20 @@ export default function Navbar() {
           ))}
         </div>
 
-        <a
-          href="#upload"
-          className="rounded-md bg-white px-4 py-2 text-sm font-semibold tracking-tight text-black transition-all hover:bg-zinc-200 hover:shadow-lg hover:shadow-white/10"
-        >
-          Try for free
-        </a>
+        <div className="flex items-center gap-2">
+          <a
+            href="/login"
+            className="rounded-md px-4 py-2 text-sm font-medium tracking-tight text-zinc-400 transition-colors hover:text-white"
+          >
+            Sign in
+          </a>
+          <a
+            href="/register"
+            className="rounded-md bg-white px-4 py-2 text-sm font-semibold tracking-tight text-black transition-all hover:bg-zinc-200 hover:shadow-lg hover:shadow-white/10"
+          >
+            Get started
+          </a>
+        </div>
       </nav>
     </header>
   );

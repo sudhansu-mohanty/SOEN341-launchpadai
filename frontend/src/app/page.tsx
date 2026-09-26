@@ -27,25 +27,30 @@ export default function HomePage() {
             How it works
           </span>
           <h2 className="mb-10 max-w-md text-2xl font-bold tracking-tight text-white sm:text-3xl">
-            From upload to recruiter-ready in three steps
+            From sign-up to hired in four steps
           </h2>
 
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[
               {
                 step: "01",
-                title: "Upload resume",
-                detail: "Drop in your PDF and run an instant ATS-style check.",
+                title: "Create account",
+                detail: "Sign up in seconds and set up your career profile.",
               },
               {
                 step: "02",
-                title: "Review score",
-                detail: "See strengths, gaps, and role-fit issues recruiters scan first.",
+                title: "Upload resume",
+                detail: "Upload your PDF resume to keep it ready for applications.",
               },
               {
                 step: "03",
-                title: "Apply fixes",
-                detail: "Use guided recommendations to improve clarity and impact fast.",
+                title: "Browse & apply",
+                detail: "Search jobs, apply directly, and track every application.",
+              },
+              {
+                step: "04",
+                title: "Get AI feedback",
+                detail: "Get AI-powered resume scoring and improvement suggestions.",
               },
             ].map((item) => (
               <div key={item.step} className="relative rounded-2xl border border-white/[0.08] p-1">
@@ -119,20 +124,20 @@ export default function HomePage() {
             />
             <div className="relative rounded-xl border border-white/5 bg-black bg-gradient-to-br from-white/[0.03] to-transparent p-10 text-center sm:p-14">
               <p className="text-xs font-medium tracking-wider text-zinc-500 uppercase">
-                Ready to ship applications faster
+                Ready to take control of your job search
               </p>
               <h2 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                Make your next resume your strongest one
+                Your next opportunity starts here
               </h2>
               <p className="mx-auto mt-3 max-w-lg tracking-tight text-zinc-500">
-                Generate clearer bullet points, improve ATS readability, and send resumes with
-                confidence.
+                Upload your resume, track applications, and get AI-powered insights to land your
+                dream role faster.
               </p>
               <a
-                href="#upload"
+                href="/register"
                 className="mt-6 inline-block rounded-lg bg-white px-6 py-3 text-sm font-bold tracking-tight text-black transition-all hover:-translate-y-0.5 hover:bg-zinc-200 hover:shadow-xl hover:shadow-white/20"
               >
-                Start free resume review
+                Create free account
               </a>
             </div>
           </div>

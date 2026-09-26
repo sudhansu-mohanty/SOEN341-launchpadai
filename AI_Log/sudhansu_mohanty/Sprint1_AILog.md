@@ -84,3 +84,123 @@
 
 **Prompt:**
 > can you configure so as the github pages can be used for an early deploymenty
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> umm they dont show up, debug pls
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> 2.
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> analyse sprint 1 details and lmk what are the code implementations of all its in class-resources
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> right now we have a resume feedback website but we wanna add that later as a gen-ai feature
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> i wanna use supabase for auth and database
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> right now i just wanna make the frontend
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> resume upload for now for sprint 1, program management isnt required for sprint 1?
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> from now the app is called launchpadai
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> umm all the designs are gone, i just see the html?
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> yeah
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> here's what we do. before we changed, there was a resume upload directly from the homepage. Lets keep it on the homepage as well
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> umm im getting code 500
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> a few changes to the login and sign up page, make it a horizontal rectangle and on the right 50% there are some random testimonials for now that rotate and fade away top to bottom mentioning how helpful launchpad is
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+>   requireStack: [
+>     'C:\\Users\\sudha\\uni\\SOEN341\\coding\\frontend\\.next\\server\\webpack-runtime.js',
+>     'C:\\Users\\sudha\\uni\\SOEN341\\coding\\frontend\\.next\\server\\pages\\_document.js',
+>     'C:\\Users\\sudha\\uni\\SOEN341\\coding\\frontend\\node_modules\\next\\dist\\server\\require.js',
+>     'C:\\Users\\sudha\\uni\\SOEN341\\coding\\frontend\\node_modules\\next\\dist\\server\\load-components.js',
+>     'C:\\Users\\sudha\\uni\\SOEN341\\coding\\frontend\\node_modules\\next\\dist\\build\\utils.js',
+>     'C:\\Users\\sudha\\uni\\SOEN341\\coding\\frontend\\node_modules\\next\\dist\\server\\dev\\hot-middleware.js',
+>     'C:\\Users\\sudha\\uni\\SOEN341\\coding\\frontend\\node_modules\\next\\dist\\server\\dev\\hot-reloader-webpack.js',
+>     'C:\\Users\\sudha\\uni\\SOEN341\\coding\\frontend\\node_modules\\next\\dist\\server\\lib\\router-utils\\setup-dev-bundler.js',
+>     'C:\\Users\\sudha\\uni\\SOEN341\\coding\\frontend\\node_modules\\next\\dist\\server\\lib\\router-server.js',
+>     'C:\\Users\\sudha\\uni\\SOEN341\\coding\\frontend\\node_modules\\next\\dist\\server\\lib\\start-server.js'
+>   ],
+>   page: '/'
+> }
+>  GET / 500 in 14ms
+>  happening constantl;y?
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> can it not show at localhosr:3000 all the time

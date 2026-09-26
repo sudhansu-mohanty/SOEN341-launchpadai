@@ -11,13 +11,13 @@ const dmSans = DM_Sans({
 });
 
 export const metadata = {
-  title: "LaunchPad — AI Resume Feedback",
+  title: "LaunchPadAI — Job Search & Application Tracking",
   description:
-    "Get ATS-style scoring and clarity feedback on your resume in seconds. Built for fast, recruiter-ready iteration.",
+    "Manage your job search, upload resumes, track applications, and get AI-powered career insights.",
   openGraph: {
-    title: "LaunchPad — AI Resume Feedback",
+    title: "LaunchPadAI — Job Search & Application Tracking",
     description:
-      "Upload your resume and get ATS scoring, keyword gaps, and clarity improvements instantly.",
+      "Your all-in-one platform for job search, resume management, and application tracking.",
     type: "website",
   },
 };

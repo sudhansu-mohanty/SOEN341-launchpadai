@@ -89,28 +89,33 @@ export default function HeroSection() {
             style={{ animation: "fade-up 0.7s cubic-bezier(0.16,1,0.3,1) 0.2s both" }}
           >
             <h1 className="text-5xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-6xl lg:text-7xl">
-              Your resume,
+              Your career,
               <br />
-              <span className="text-zinc-400">recruiter-ready.</span>
+              <span className="text-zinc-400">launched.</span>
             </h1>
 
             <p className="mt-6 max-w-md text-base leading-relaxed tracking-tight text-zinc-300 sm:text-lg">
-              Get ATS-style scoring and clarity feedback in seconds — so your
-              resume is easier to scan and easier to shortlist.
+              Upload resumes, track applications, and get AI-powered feedback —
+              everything you need to land your next role, in one place.
             </p>
 
             <div className="mt-8 flex items-center gap-4">
               <a
-                href="#upload"
+                href="/register"
                 className="rounded-lg bg-white px-6 py-3 text-sm font-bold tracking-tight text-black transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-white/20"
               >
-                Analyze my resume
+                Get started
               </a>
-              <span className="text-sm tracking-tight text-zinc-500">Free · No signup</span>
+              <a
+                href="/login"
+                className="text-sm font-medium tracking-tight text-zinc-400 transition-colors hover:text-white"
+              >
+                Sign in
+              </a>
             </div>
 
             <div className="mt-6 flex flex-wrap gap-2">
-              {["No credit card", "ATS-friendly insights", "Results in seconds"].map((chip) => (
+              {["Resume management", "Application tracking", "AI-powered feedback"].map((chip) => (
                 <span
                   key={chip}
                   className="rounded-md border border-white/10 px-3 py-1 text-xs tracking-tight text-zinc-400 transition-colors hover:border-white/20 hover:text-zinc-300"

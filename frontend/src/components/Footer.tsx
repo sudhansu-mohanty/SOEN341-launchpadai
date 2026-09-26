@@ -7,7 +7,7 @@ export default function Footer() {
             Launch<span className="text-zinc-500">Pad</span>
           </p>
           <p className="mt-1 text-sm tracking-tight text-zinc-600">
-            AI resume feedback built for fast, recruiter-ready iteration.
+            Job search and application tracking, powered by AI.
           </p>
         </div>
         <div className="flex flex-wrap gap-1">
@@ -24,8 +24,8 @@ export default function Footer() {
       </div>
 
       <div className="mt-8 flex flex-col items-start justify-between gap-2 sm:flex-row">
-        <p className="text-xs tracking-tight text-zinc-700">&copy; 2026 LaunchPad Resume AI</p>
-        <p className="text-xs tracking-tight text-zinc-700">Built for confident applications.</p>
+        <p className="text-xs tracking-tight text-zinc-700">&copy; 2026 LaunchPadAI</p>
+        <p className="text-xs tracking-tight text-zinc-700">Built for confident career moves.</p>
       </div>
     </footer>
   );
