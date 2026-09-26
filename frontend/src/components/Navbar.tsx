@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 const links = [
   { label: "Features", href: "#" },
@@ -27,38 +28,38 @@ export default function Navbar() {
       style={{ animation: "fade-down 0.5s cubic-bezier(0.16,1,0.3,1) both" }}
     >
       <nav className="mx-auto flex h-14 max-w-6xl items-center justify-between px-5">
-        <a
+        <Link
           href="/"
           className="text-lg font-extrabold tracking-tight text-white no-underline"
         >
           Launch<span className="text-zinc-400">Pad</span>
-        </a>
+        </Link>
 
         <div className="hidden items-center gap-1 sm:flex">
           {links.map((link) => (
-            <a
+            <Link
               key={link.label}
               href={link.href}
               className="rounded-md px-3 py-1.5 text-sm font-medium tracking-tight text-zinc-500 transition-colors hover:text-white"
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </div>
 
         <div className="flex items-center gap-2">
-          <a
+          <Link
             href="/login"
             className="rounded-md px-4 py-2 text-sm font-medium tracking-tight text-zinc-400 transition-colors hover:text-white"
           >
             Sign in
-          </a>
-          <a
+          </Link>
+          <Link
             href="/register"
             className="rounded-md bg-white px-4 py-2 text-sm font-semibold tracking-tight text-black transition-all hover:bg-zinc-200 hover:shadow-lg hover:shadow-white/10"
           >
             Get started
-          </a>
+          </Link>
         </div>
       </nav>
     </header>

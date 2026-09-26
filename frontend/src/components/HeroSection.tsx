@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { ShaderAnimation } from "@/components/ui/shader-animation";
 
 function randomBetween(min: number, max: number) {
@@ -100,18 +101,18 @@ export default function HeroSection() {
             </p>
 
             <div className="mt-8 flex items-center gap-4">
-              <a
+              <Link
                 href="/register"
                 className="rounded-lg bg-white px-6 py-3 text-sm font-bold tracking-tight text-black transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-white/20"
               >
                 Get started
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/login"
                 className="text-sm font-medium tracking-tight text-zinc-400 transition-colors hover:text-white"
               >
                 Sign in
-              </a>
+              </Link>
             </div>
 
             <div className="mt-6 flex flex-wrap gap-2">

@@ -8,6 +8,7 @@ import Navbar from "../components/Navbar";
 import RecruiterShowcase from "../components/RecruiterShowcase";
 import ResumeUploader from "../components/ResumeUploader";
 import ScoreCard, { ScoreResult } from "../components/ScoreCard";
+import Link from "next/link";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 
 export default function HomePage() {
@@ -133,12 +134,12 @@ export default function HomePage() {
                 Upload your resume, track applications, and get AI-powered insights to land your
                 dream role faster.
               </p>
-              <a
+              <Link
                 href="/register"
                 className="mt-6 inline-block rounded-lg bg-white px-6 py-3 text-sm font-bold tracking-tight text-black transition-all hover:-translate-y-0.5 hover:bg-zinc-200 hover:shadow-xl hover:shadow-white/20"
               >
                 Create free account
-              </a>
+              </Link>
             </div>
           </div>
         </section>
