@@ -1,4 +1,4 @@
-﻿# SOEN341 - CareerConnect Web App
+﻿# SOEN341 - LaunchPadAI Web App
 **Team members: Sudhansu Mohanty, Cheyma Abidi, Othmane Balmouddane, Fatmagul Dedek, Ahcene Chouyoukh** </br>
 
 ## Project Description:</br>
