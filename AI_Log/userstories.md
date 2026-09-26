@@ -173,79 +173,79 @@ The first three user stories (**US-01**, **US-02**, and **US-03**) are structure
 ---
 
 ## Part 2: Team-Generated & Original User Stories (US-11 to US-15)
-*Origin: Conceived, brainstormed, and designed independently by the team to provide unique functionality beyond AI suggestions[cite: 1, 4].*
+*Origin: Conceived, brainstormed, and designed independently by the team to provide unique functionality beyond AI suggestions.*
 
 ### US-11 [User Story #11] | Fatmagul Dedek
-* **User Story (Original Team Feature):** As a job seeker, I want to evaluate curated job postings via a Tinder-style swipeable card deck, so that I can rapidly save or discard opportunities without search fatigue[cite: 1, 4].
-* **Assignee:** `@FatmagulDedek`[cite: 1, 4] | **Priority:** High | **Milestone:** `Sprint 2` / `Sprint 3` | **Status:** Not Started[cite: 1, 4]
-* **Labels:** `user-story`, `team-original`, `job-seeker`[cite: 1, 4]
+* **User Story (Original Team Feature):** As a job seeker, I want to evaluate curated job postings via a Tinder-style swipeable card deck, so that I can rapidly save or discard opportunities without search fatigue.
+* **Assignee:** `@FatmagulDedek` | **Priority:** High | **Milestone:** `Sprint 2` / `Sprint 3` | **Status:** Not Started
+* **Labels:** `user-story`, `team-original`, `job-seeker`
 * **Acceptance Criteria:**
-  - [ ] Renders job listings as a deck of gesture-interactive swipe cards[cite: 1, 4].
-  - [ ] Swiping right saves the role to the seeker's `saved_jobs` table[cite: 1, 4].
+  - [ ] Renders job listings as a deck of gesture-interactive swipe cards.
+  - [ ] Swiping right saves the role to the seeker's `saved_jobs` table.
   - [ ] Swiping left dismisses the posting and caches its ID so it is excluded from future deck rotations.
-  - [ ] Tapping a card expands it to display full job details, perks, and salary preview[cite: 1, 4].
+  - [ ] Tapping a card expands it to display full job details, perks, and salary preview.
 * **Tasks:**
-  - [ ] **Task 11.1:** Build gesture-driven card deck component using Framer Motion (drag gestures, rotation physics)[cite: 4].
-  - [ ] **Task 11.2:** Implement database write on swipe-right into `saved_jobs` table[cite: 1, 4].
+  - [ ] **Task 11.1:** Build gesture-driven card deck component using Framer Motion (drag gestures, rotation physics).
+  - [ ] **Task 11.2:** Implement database write on swipe-right into `saved_jobs` table.
   - [ ] **Task 11.3:** Implement exclusion filter caching for dismissed cards on swipe-left.
-  - [ ] **Task 11.4:** Build expandable modal revealing full job details and requirements on card tap[cite: 1, 4].
+  - [ ] **Task 11.4:** Build expandable modal revealing full job details and requirements on card tap.
 
 ---
 
 ### US-12 [User Story #12] | Fatmagul Dedek
-* **User Story (Mandatory GenAI Feature):** As a job seeker, I want to scan my uploaded resume against an ATS evaluation model, so that I can receive an ATS compatibility score and actionable recommendations to improve it[cite: 1, 4].
-* **Assignee:** `@FatmagulDedek`[cite: 1, 4] | **Priority:** Medium | **Milestone:** `Sprint 3` | **Status:** Not Started[cite: 1, 4]
-* **Labels:** `user-story`, `team-original`, `ai-feature`[cite: 1, 4]
+* **User Story (Mandatory GenAI Feature):** As a job seeker, I want to scan my uploaded resume against an ATS evaluation model, so that I can receive an ATS compatibility score and actionable recommendations to improve it.
+* **Assignee:** `@FatmagulDedek` | **Priority:** Medium | **Milestone:** `Sprint 3` | **Status:** Not Started
+* **Labels:** `user-story`, `team-original`, `ai-feature`
 * **Acceptance Criteria:**
-  - [ ] System extracts text from candidate resume PDF and transmits it to LLM API using an ATS prompt[cite: 1, 4].
-  - [ ] Returns composite ATS score (0-100) and metric scores (Structure, Keywords, Clarity, Impact)[cite: 4].
-  - [ ] Provides categorized bullet-point feedback with concrete wording suggestions[cite: 1, 4].
+  - [ ] System extracts text from candidate resume PDF and transmits it to LLM API using an ATS prompt.
+  - [ ] Returns composite ATS score (0-100) and metric scores (Structure, Keywords, Clarity, Impact).
+  - [ ] Provides categorized bullet-point feedback with concrete wording suggestions.
 * **Tasks:**
-  - [ ] **Task 12.1:** Implement backend API route to parse PDF text and query LLM endpoint with ATS evaluation system prompt[cite: 1, 4].
-  - [ ] **Task 12.2:** Build ATS score breakdown UI displaying composite score meter and category gauges[cite: 1, 4].
-  - [ ] **Task 12.3:** Build UI container displaying actionable bullet-point resume improvement recommendations[cite: 1, 4].
+  - [ ] **Task 12.1:** Implement backend API route to parse PDF text and query LLM endpoint with ATS evaluation system prompt.
+  - [ ] **Task 12.2:** Build ATS score breakdown UI displaying composite score meter and category gauges.
+  - [ ] **Task 12.3:** Build UI container displaying actionable bullet-point resume improvement recommendations.
 
 ---
 
 ### US-13 [User Story #13] | Ahcene Chouyoukh
-* **User Story:** As a job seeker, I want to browse external job listings imported via external job APIs (e.g., LinkedIn/Glassdoor data), so that I can track external and internal opportunities in a unified platform[cite: 1, 4].
-* **Assignee:** `@AhceneChouyoukh`[cite: 1, 4] | **Priority:** Medium | **Milestone:** `Sprint 3` | **Status:** Not Started[cite: 1, 4]
-* **Labels:** `user-story`, `team-original`, `job-seeker`[cite: 1, 4]
+* **User Story:** As a job seeker, I want to browse external job listings imported via external job APIs (e.g., LinkedIn/Glassdoor data), so that I can track external and internal opportunities in a unified platform.
+* **Assignee:** `@AhceneChouyoukh`[cite: 1, 4] | **Priority:** Medium | **Milestone:** `Sprint 3` | **Status:** Not Started
+* **Labels:** `user-story`, `team-original`, `job-seeker`
 * **Acceptance Criteria:**
-  - [ ] Queries an external job aggregator API (e.g., JSearch / Adzuna) and renders listings cleanly[cite: 4].
-  - [ ] Provides an "Import to Tracker" action that saves the external role into the seeker's application board[cite: 4].
-  - [ ] External listings are visually distinguished with origin badges (e.g., "Source: LinkedIn")[cite: 1, 4].
+  - [ ] Queries an external job aggregator API (e.g., JSearch / Adzuna) and renders listings cleanly.
+  - [ ] Provides an "Import to Tracker" action that saves the external role into the seeker's application board.
+  - [ ] External listings are visually distinguished with origin badges (e.g., "Source: LinkedIn").
 * **Tasks:**
-  - [ ] **Task 13.1:** Create backend caching proxy to query and sanitize external job search API feeds[cite: 4].
-  - [ ] **Task 13.2:** Build card UI badge elements identifying external job origin and source links[cite: 4].
-  - [ ] **Task 13.3:** Implement "Import to Tracker" action creating manual records on the seeker application board[cite: 1, 4].
+  - [ ] **Task 13.1:** Create backend caching proxy to query and sanitize external job search API feeds.
+  - [ ] **Task 13.2:** Build card UI badge elements identifying external job origin and source links.
+  - [ ] **Task 13.3:** Implement "Import to Tracker" action creating manual records on the seeker application board.
 
 ---
 
 ### US-14 [User Story #14] | Ahcene Chouyoukh
-* **User Story:** As a job seeker, I want to receive notification alerts for approaching application closing dates, so that I submit my applications before deadlines expire[cite: 1, 4].
-* **Assignee:** `@AhceneChouyoukh`[cite: 1, 4] | **Priority:** Low | **Milestone:** `Sprint 3` / `Sprint 4` | **Status:** Not Started[cite: 1, 4]
-* **Labels:** `user-story`, `team-original`, `job-seeker`[cite: 1, 4]
+* **User Story:** As a job seeker, I want to receive notification alerts for approaching application closing dates, so that I submit my applications before deadlines expire.
+* **Assignee:** `@AhceneChouyoukh`| **Priority:** Low | **Milestone:** `Sprint 3` / `Sprint 4` | **Status:** Not Started
+* **Labels:** `user-story`, `team-original`, `job-seeker`
 * **Acceptance Criteria:**
-  - [ ] Identifies saved and open applications whose closing dates fall within 48 hours[cite: 1, 4].
-  - [ ] Displays a notification counter badge on the top navigation bar[cite: 1, 4].
-  - [ ] Notification popover lists expiring postings with direct navigation links[cite: 1, 4].
+  - [ ] Identifies saved and open applications whose closing dates fall within 48 hours.
+  - [ ] Displays a notification counter badge on the top navigation bar.
+  - [ ] Notification popover lists expiring postings with direct navigation links.
 * **Tasks:**
-  - [ ] **Task 14.1:** Write Supabase query selecting saved jobs with application deadlines occurring within 48 hours[cite: 1, 4].
-  - [ ] **Task 14.2:** Build top navigation notification bell UI icon with dynamic active counter badge[cite: 1, 4].
-  - [ ] **Task 14.3:** Build reminder popover drawer displaying urgent deadlines and direct link buttons[cite: 1, 4].
+  - [ ] **Task 14.1:** Write Supabase query selecting saved jobs with application deadlines occurring within 48 hours.
+  - [ ] **Task 14.2:** Build top navigation notification bell UI icon with dynamic active counter badge.
+  - [ ] **Task 14.3:** Build reminder popover drawer displaying urgent deadlines and direct link buttons.
 
 ---
 
 ### US-15 [User Story #15] | Ahcene Chouyoukh
-* **User Story:** As a job seeker, I want to save and bookmark interesting job postings into a favorites drawer, so that I can review them together and apply at a later time[cite: 1, 4].
-* **Assignee:** `@AhceneChouyoukh`[cite: 1, 4] | **Priority:** Low | **Milestone:** `Sprint 2` | **Status:** Not Started[cite: 1, 4]
-* **Labels:** `user-story`, `team-original`, `job-seeker`[cite: 1, 4]
+* **User Story:** As a job seeker, I want to save and bookmark interesting job postings into a favorites drawer, so that I can review them together and apply at a later time.
+* **Assignee:** `@AhceneChouyoukh`| **Priority:** Low | **Milestone:** `Sprint 2` | **Status:** Not Started
+* **Labels:** `user-story`, `team-original`, `job-seeker`
 * **Acceptance Criteria:**
-  - [ ] All job cards feature an interactive bookmark icon to toggle saved state[cite: 1, 4].
-  - [ ] Slide-out drawer or favorites page renders all saved listings for the logged-in seeker[cite: 1, 4].
-  - [ ] Each bookmarked role in the drawer includes an inline "Apply Now" trigger[cite: 1, 4].
+  - [ ] All job cards feature an interactive bookmark icon to toggle saved state.
+  - [ ] Slide-out drawer or favorites page renders all saved listings for the logged-in seeker.
+  - [ ] Each bookmarked role in the drawer includes an inline "Apply Now" trigger.
 * **Tasks:**
-  - [ ] **Task 15.1:** Create `saved_jobs` junction table in Supabase linking `seeker_id` and `job_id`[cite: 4].
-  - [ ] **Task 15.2:** Build interactive bookmark toggle button on all job cards[cite: 1, 4].
-  - [ ] **Task 15.3:** Build slide-over favorites drawer displaying bookmarked roles and apply triggers[cite: 1, 4].
+  - [ ] **Task 15.1:** Create `saved_jobs` junction table in Supabase linking `seeker_id` and `job_id`.
+  - [ ] **Task 15.2:** Build interactive bookmark toggle button on all job cards.
+  - [ ] **Task 15.3:** Build slide-over favorites drawer displaying bookmarked roles and apply triggers.
