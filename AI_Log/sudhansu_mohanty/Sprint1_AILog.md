@@ -470,3 +470,202 @@
 
 **Prompt:**
 > commit message
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> whats the techstack now?
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> how is the resume upload feature working out right now? is it being stored somewhere profilewise?
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> wire up the resume upload to supabase storage
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> i will be giving you a command but you dont commit, claude cant commit. Make the issues and changes but do not push or commits
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> You are an Agile release assistant helping me set up GitHub issues for our SOEN 341 project (LaunchPadAI). We recently committed our Sprint 1 implementation directly to the repository and now need to ensure full backlog traceability before our TA lab check-in.
+> 
+> Use the GitHub CLI (`gh`) and Git to inspect our repository and automate the creation and linking of technical implementation issues.
+> 
+> Follow these step-by-step instructions:
+> 
+> 1. INSPECT COMMITS:
+>    Run `git log --oneline -n 15` to inspect recent commit history and extract the 7-character commit SHAs corresponding to:
+>    - Frontend and Next.js / TypeScript project scaffolding
+>    - Supabase client initialization, database migrations, and profile triggers
+>    - User authentication (registration, login, role routing)
+>    - PDF resume dropzone and Supabase Storage integration
+> 
+> 2. VERIFY OR CREATE LABELS & MILESTONES:
+>    Ensure the milestone `Sprint 1` exists:
+>    `gh api repos/:owner/:repo/milestones --jq '.[].title' | grep "Sprint 1" || gh api repos/:owner/:repo/milestones -f title="Sprint 1"`
+>    Ensure the following labels exist (create them if missing): `setup`, `frontend`, `backend`, `auth`, `storage`, `sprint-1-demo`.
+> 
+> 3. CREATE AND LINK ISSUES:
+>    Using `gh issue create`, generate the following 4 technical task issues under Milestone "Sprint 1", assigned to "@SudhansuMohanty". In each issue body, include the exact matching commit SHA found in Step 1 under a dedicated "### ðŸ”— Traceability & Commits" section:
+> 
+>    ---
+>    ISSUE A:
+>    - Title: "[TASK] Scaffold Frontend Architecture with TypeScript and Next.js"
+>    - Labels: "setup,frontend,typescript"
+>    - Body:
+>      ## ðŸ“Œ Description
+>      Initialize frontend architecture for LaunchPadAI using strict TypeScript, Next.js, and Tailwind CSS.
+>      ### ðŸŽ¯ Deliverables
+>      - [x] Configure Next.js with TypeScript compiler options (`tsconfig.json`).
+>      - [x] Set up Tailwind CSS styling and global styles.
+>      - [x] Add application shell (Navbar, Footer, App Container).
+>      - [x] Define global TypeScript interfaces (`UserRole`, `Profile`, `Job`, `Application`).
+>      ### ðŸ”— Traceability & Commits
+>      - **Implemented in Commit:** `<INSERT_FRONTEND_SCAFFOLD_COMMIT_SHA>`
+>      - **Author:** @SudhansuMohanty
+>      - **Resolution:** Implemented on main to bootstrap project architecture.
+> 
+>    ---
+>    ISSUE B:
+>    - Title: "[TASK] Configure Supabase Client, Auth Schema, and Profile Trigger"
+>    - Labels: "backend,database,setup"
+>    - Body:
+>      ## ðŸ“Œ Description
+>      Provision Supabase backend client, PostgreSQL tables, and triggers for user role management.
+>      ### ðŸŽ¯ Deliverables
+>      - [x] Configure `@supabase/supabase-js` client in `lib/supabaseClient.ts`.
+>      - [x] Define `user_role` enum (`job_seeker`, `recruiter`).
+>      - [x] Create `public.profiles` schema with foreign key to `auth.users`.
+>      - [x] Add PostgreSQL trigger `handle_new_user()` to automatically populate profile row upon signup.
+>      - [x] Set up Row Level Security (RLS) policies for profile records.
+>      ### ðŸ”— Traceability & Commits
+>      - **Implemented in Commit:** `<INSERT_SUPABASE_BACKEND_COMMIT_SHA>`
+>      - **Author:** @SudhansuMohanty
+>      - **Resolution:** Implemented on main for database initialization.
+> 
+>    ---
+>    ISSUE C:
+>    - Title: "[TASK] Implement User Registration, Login, and Role-Based Routing"
+>    - Labels: "auth,frontend,backend,sprint-1-demo"
+>    - Body:
+>      ## ðŸ“Œ Description
+>      Implement authentication views and connect them to Supabase Auth API with role-based dashboard redirects.
+>      ### ðŸŽ¯ Acceptance Criteria
+>      - [x] Registration form collects email, password, full name, and role selector.
+>      - [x] Submits registration payload to `supabase.auth.signUp()`.
+>      - [x] Login view authenticates credentials via `supabase.auth.signInWithPassword()`.
+>      - [x] Displays clear error states for invalid credentials or duplicate emails.
+>      - [x] Authenticated session redirects recruiters to `/recruiter/dashboard` and seekers to `/seeker/dashboard`.
+>      - [x] Logout action purges session tokens and returns to public landing page.
+>      ### ðŸ”— Traceability & Commits
+>      - **Implemented in Commit:** `<INSERT_AUTH_COMMIT_SHA>`
+>      - **Author:** @SudhansuMohanty
+>      - **Resolution:** Implemented on main to deliver Sprint 1 Demo Feature 1.
+> 
+>    ---
+>    ISSUE D:
+>    - Title: "[TASK] Build Drag-and-Drop Resume Dropzone and Connect Supabase Storage"
+>    - Labels: "frontend,storage,sprint-1-demo"
+>    - Body:
+>      ## ðŸ“Œ Description
+>      Implement interactive PDF resume dropzone and connect to Supabase Storage with user-isolated RLS policies.
+>      ### ðŸŽ¯ Acceptance Criteria
+>      - [x] Provision private `resumes` storage bucket in Supabase.
+>      - [x] Configure storage RLS policy restricting access to `resumes/{auth.uid()}/*`.
+>      - [x] Create drag-and-drop resume upload UI component.
+>      - [x] Enforce validation restricting uploads to PDF format under 5 MB.
+>      - [x] Upload files via `supabase.storage.from('resumes').upload()`.
+>      - [x] Persist upload path to `profiles.resume_url`.
+>      ### ðŸ”— Traceability & Commits
+>      - **Implemented in Commit:** `<INSERT_RESUME_STORAGE_COMMIT_SHA>`
+>      - **Author:** @SudhansuMohanty
+>      - **Resolution:** Implemented on main to deliver Sprint 1 Demo Feature 2.
+> 
+> 4. CLOSE & CONFIRM:
+>    Once the issues are created with their commit references, close them via `gh issue close <ISSUE_NUMBER> --comment "Resolved via commit <SHA>. Verified working in local Sprint 1 demo environment."` so they appear under "Done" in the Sprint 1 milestone.
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> can you check if the ai log is all well documented?
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> 
+> 1
+> 
+> Automatic Zoom
+> AI Usage Log of Cheyma Abidi 
+>  
+> Task 1.1: Generating E+ort Estimates of Sprint Plan 1 
+>  
+> Purpose of AI Use: Estimating the e+ort estimates (in hours) for each issue in sprint plan 1. 
+>  
+> Prompt/Response: 
+>  
+> *In her prompt, Cheyma copies her Excel table into the AI. 
+> Exact prompt: "3 Add project description to 
+> README 4 Prepare an initial login page 5 
+> Add installation guide on 
+> README 6 Test login page 7 Complete the backend 8 Add sprint plan to repository 9 
+> Add first + second third 
+> meeting minute 10 Complete the authentification 11 Test authentification 12 
+> Improve style of the login 
+> (user did not enjoy it) 13 Update the frontend 14 Test the new frontend of login 15 
+> Complete team process 
+> definition 16 
+> Upload resume feature (user 
+> uploads resume) 17 
+> Error message appears at 
+> login (user didnt enter the 
+> right credentials)  
+> 28 Confirmation message on 
+> resume upload (user wants to 
+> see confirmation) User Hide password (user sees that 
+> their password to be hidden) User Replace resume feature (user 
+> wants to replace resume) User Logout feature (user logs out) User Empty login fields (user 
+> tries 
+> to login wih empty fields) User Error message appears at 
+> resume upload (user didnt 
+> upload file) User Seeing the name of the 
+> uploaded file (user wants to 
+> see it) User Delete resume User final verdict (user uses all 
+> features in one session) User Review AI logs Task Complete last meeting minute                                 
+> I know the format is messed up. there are 26 tasks. I want you to estimate the e?ort 
+> needed (in time) for each" 
+>  
+> Response: https://chatgpt.com/s/t_6ab89b39fb188191876b40926443fd21 
+>  
+> Validation: Personal judgment and discussion with teammates. 
+>  
+> Decision: 
+> - A significant amount of the AI's input was accepted. 
+> - However, estimates that seemed inaccurate were adjusted by Cheyma after discussing 
+> with the team. 
+>  
+> Reflection: AI helped give the team an idea of how much time would be needed for each 
+> issue, but some estimates were inaccurate and modified accordingly. 
+>  
+> Responsible Person: Cheyma Abidi  use this format
