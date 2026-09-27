@@ -1,10 +1,8 @@
 # AI Usage Log
 
-**Task Title:** Generating Effort Estimates and Review of Sprint Plan 1
+**Task 1.1:** Generating Effort Estimates of Sprint Plan 1
 
-**Purpose of AI Use:** 
-- Estimating the effort estimates (in hours) for each issue in sprint plan 1
-- Receive a review for sprint plan 1
+**Purpose of AI Use:** Estimating the effort estimates (in hours) for each issue in sprint plan 1
 
 **Prompt/Response:**
 Prompt: 3 Add project description to
@@ -36,10 +34,11 @@ features in one session) User Review AI logs Task Complete last meeting minute  
 
 Response: https://chatgpt.com/s/t_6ab89b39fb188191876b40926443fd21
 
-**Validation:** 
-**Decision:** 
-**Reflection:** 
-**Responsible Person:** Cheyma Abidi
+**Validation:** Personal judgment and discussion with teammates.
 
-ChatGPT was used on 09/20/2026 on Sprint plan 1 to estimate the time needed for each issue.
-Estimates that seemed inaccurate were adjusted by Cheyma.
+**Decision:** 
+- A significant amount of the AI's input was accepted
+- However, estimates that seemed inaccurate were adjusted by Cheyma
+
+**Reflection:** AI helped give the team an idea of how much time would be needed for each issue, but some estimates were inaccurate and modified accordingly.
+**Responsible Person:** Cheyma Abidi
