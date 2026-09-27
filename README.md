@@ -16,7 +16,7 @@ CarrerConnect is a web-based platform designed to help job seekers manage their 
 ## Proposed solution </br>
 *   Having resume management, job postings, application tracking and more on the same platform will relieve stress from the users
 
-## 🛠️ Technology
+## Technology
 * **Frontend Framework:** Next.js 14 (React, TypeScript strict mode)
 * **Styling & Motion:** Tailwind CSS v4, Motion (Framer Motion), Three.js
 * **Backend, Auth & Storage:** Supabase (PostgreSQL, Supabase Auth, Storage Buckets)
