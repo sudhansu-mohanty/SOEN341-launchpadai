@@ -5,6 +5,7 @@
 **Purpose of AI Use:** Estimating the effort estimates (in hours) for each issue in sprint plan 1
 
 **Prompt/Response:**
+
 Prompt: "3 Add project description to
 README 4 Prepare an initial login page 5
 Add installation guide on
