@@ -10,12 +10,23 @@ CarrerConnect is a web-based platform designed to help job seekers manage their 
 ## Proposed solution </br>
 *   Having resume management, job postings, application tracking and more on the same platform will relieve stress from the users
 
-## Technologies used </br>
-* React
-* ??
+## 🛠️ Technology
+* **Frontend Framework:** Next.js 14 (React, TypeScript strict mode)
+* **Styling & Motion:** Tailwind CSS v4, Motion (Framer Motion), Three.js
+* **Backend, Auth & Storage:** Supabase (PostgreSQL, Supabase Auth, Storage Buckets)
+* **CI/CD & Version Control:** GitHub Actions, Git, GitHub Pages / Vercel
 
-## Setup Instructions </br>
-*  installations needed for react
+## Local Setup & Installation
+
+### Prerequisites
+* Node.js (v20+ recommended)
+* npm or pnpm
+
+### Step-by-Step Setup
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/sudhansu-mohanty/SOEN341-launchpadai.git](https://github.com/sudhansu-mohanty/SOEN341-launchpadai.git)
+   cd SOEN341-launchpadai
 
 ## Proposed features </br>
 *  Swiping through job postings
