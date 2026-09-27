@@ -42,4 +42,5 @@ Response: https://chatgpt.com/s/t_6ab89b39fb188191876b40926443fd21
 - However, estimates that seemed inaccurate were adjusted by Cheyma
 
 **Reflection:** AI helped give the team an idea of how much time would be needed for each issue, but some estimates were inaccurate and modified accordingly.
+
 **Responsible Person:** Cheyma Abidi
