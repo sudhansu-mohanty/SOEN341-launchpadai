@@ -414,3 +414,38 @@
 
 **Prompt:**
 > commit message?
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> make sure the upload and score button leads to /score on the webpage with a section just mentioning analysis coming soon
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> i just realized i should have an option to choose either you're a job-seeker or recruiter
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> on the register page just a toggle option like, "I'm a" recruiter or Job-skker
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> how is it saved in the backend
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> i wanna resuse my email to go through the option again, should i delete my email from supabase

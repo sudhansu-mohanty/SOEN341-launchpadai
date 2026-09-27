@@ -75,52 +75,12 @@ export default function ResumeUploader({ onResult, onError, onScored }: Props) {
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!validatePdf(file)) return;
-    const formData = new FormData();
-    formData.append("file", file);
 
     setStatus("uploading");
     setErrorMessage("");
-    let hasError = false;
-    try {
-      const response = await fetch(API_URL, {
-        method: "POST",
-        body: formData,
-      });
-      if (!response.ok) {
-        const payload = await response.json().catch(() => ({ detail: "Upload failed" }));
-        setError(payload.detail ?? "Upload failed");
-        hasError = true;
-        return;
-      }
-      const raw = await response.json();
 
-      const payload: ScoreResult = {
-        filename: raw.filename,
-        total_score: raw.score,
-        summary: raw.summary,
-        strengths: raw.strengths || [],
-        weaknesses: raw.weaknesses || [],
-        categories: {
-          skills: raw.skills_score,
-          experience: raw.experience_score,
-          projects: raw.projects_score,
-          education: raw.education_score,
-          impact: raw.impact_score,
-          formatting: raw.formatting_score,
-        },
-      };
-
-      setData(raw as ScoreData);
-      onResult(payload);
-      onScored?.(payload);
-      setStatus("idle");
-      router.push("/score");
-    } catch {
-      setError("Scoring service is currently unavailable. You can continue in demo mode.");
-      hasError = true;
-    } finally {
-      if (!hasError) setStatus("idle");
-    }
+    // Sprint 1: skip API call, navigate directly to /score placeholder
+    router.push("/score");
   };
 
   return (

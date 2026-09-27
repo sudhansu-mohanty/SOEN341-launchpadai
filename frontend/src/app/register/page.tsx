@@ -12,6 +12,7 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [role, setRole] = useState<"job-seeker" | "recruiter">("job-seeker");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -40,7 +41,7 @@ export default function RegisterPage() {
     const { error: signUpError } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: name } },
+      options: { data: { full_name: name, role } },
     });
 
     setLoading(false);
@@ -71,6 +72,36 @@ export default function RegisterPage() {
                 </p>
 
                 <form onSubmit={onSubmit} className="mt-8 grid gap-5">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium tracking-tight text-zinc-400">
+                      I&apos;m a
+                    </label>
+                    <div className="flex rounded-lg border border-white/10 p-1">
+                      <button
+                        type="button"
+                        onClick={() => setRole("job-seeker")}
+                        className={`flex-1 rounded-md px-4 py-2.5 text-sm font-semibold tracking-tight transition-all ${
+                          role === "job-seeker"
+                            ? "bg-white text-black shadow-sm"
+                            : "text-zinc-500 hover:text-zinc-300"
+                        }`}
+                      >
+                        Job Seeker
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setRole("recruiter")}
+                        className={`flex-1 rounded-md px-4 py-2.5 text-sm font-semibold tracking-tight transition-all ${
+                          role === "recruiter"
+                            ? "bg-white text-black shadow-sm"
+                            : "text-zinc-500 hover:text-zinc-300"
+                        }`}
+                      >
+                        Recruiter
+                      </button>
+                    </div>
+                  </div>
+
                   <div>
                     <label
                       htmlFor="name"
