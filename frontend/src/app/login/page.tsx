@@ -2,14 +2,17 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import TestimonialPanel from "@/components/TestimonialPanel";
+import { supabase } from "@/lib/supabase";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -21,11 +24,20 @@ export default function LoginPage() {
     }
 
     setLoading(true);
-    // TODO: Wire up Supabase auth
-    setTimeout(() => {
-      setLoading(false);
-      setError("Authentication not yet connected. Supabase integration coming soon.");
-    }, 800);
+
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    setLoading(false);
+
+    if (signInError) {
+      setError(signInError.message);
+      return;
+    }
+
+    router.push("/dashboard");
   };
 
   return (

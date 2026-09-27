@@ -2,8 +2,10 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import TestimonialPanel from "@/components/TestimonialPanel";
+import { supabase } from "@/lib/supabase";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -12,6 +14,7 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -33,11 +36,21 @@ export default function RegisterPage() {
     }
 
     setLoading(true);
-    // TODO: Wire up Supabase auth
-    setTimeout(() => {
-      setLoading(false);
-      setError("Registration not yet connected. Supabase integration coming soon.");
-    }, 800);
+
+    const { error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: name } },
+    });
+
+    setLoading(false);
+
+    if (signUpError) {
+      setError(signUpError.message);
+      return;
+    }
+
+    router.push("/login");
   };
 
   return (

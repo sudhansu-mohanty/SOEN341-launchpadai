@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import Faq from "../components/Faq";
+// import Faq from "../components/Faq";
 import Footer from "../components/Footer";
 import HeroSection from "../components/HeroSection";
 import Navbar from "../components/Navbar";
-import RecruiterShowcase from "../components/RecruiterShowcase";
+// import RecruiterShowcase from "../components/RecruiterShowcase";
 import ResumeUploader from "../components/ResumeUploader";
 import ScoreCard, { ScoreResult } from "../components/ScoreCard";
 import Link from "next/link";
@@ -40,13 +40,13 @@ export default function HomePage() {
               },
               {
                 step: "02",
-                title: "Upload resume",
-                detail: "Upload your PDF resume to keep it ready for applications.",
+                title: "Browse & apply",
+                detail: "Search jobs, apply directly, and track every application.",
               },
               {
                 step: "03",
-                title: "Browse & apply",
-                detail: "Search jobs, apply directly, and track every application.",
+                title: "Upload resume",
+                detail: "Upload your PDF resume to keep it ready for applications.",
               },
               {
                 step: "04",
@@ -63,8 +63,8 @@ export default function HomePage() {
                   inactiveZone={0.01}
                   borderWidth={3}
                 />
-                <div className="relative rounded-xl border border-white/5 bg-black p-6">
-                  <span className="mb-4 block text-4xl font-extrabold tracking-tight text-zinc-800">
+                <div className="relative h-full rounded-xl border border-white/5 bg-black p-6">
+                  <span className="mb-4 block text-4xl font-extrabold tracking-tight text-white">
                     {item.step}
                   </span>
                   <h3 className="mb-2 text-sm font-semibold tracking-tight text-white">{item.title}</h3>
@@ -77,6 +77,9 @@ export default function HomePage() {
 
         {/* Upload section */}
         <section id="upload" className="py-10">
+          <h2 className="mb-6 text-2xl font-bold tracking-tight text-white sm:text-3xl">
+            Drop your resume here
+          </h2>
           <div className="relative rounded-2xl border border-white/[0.08] p-1">
             <GlowingEffect
               spread={40}
@@ -103,14 +106,14 @@ export default function HomePage() {
         </section>
 
         {/* Recruiter showcase */}
-        <section className="py-10">
+        {/* <section className="py-10">
           <RecruiterShowcase />
-        </section>
+        </section> */}
 
         {/* FAQ */}
-        <section className="py-10">
+        {/* <section className="py-10">
           <Faq />
-        </section>
+        </section> */}
 
         {/* CTA */}
         <section className="py-10">

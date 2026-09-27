@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ShaderAnimation } from "@/components/ui/shader-animation";
+import { supabase } from "@/lib/supabase";
+import type { User } from "@supabase/supabase-js";
 
 function randomBetween(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -28,6 +30,7 @@ export default function HeroSection() {
   const [target, setTarget] = useState(INITIAL);
   const [metrics, setMetrics] = useState(INITIAL.metrics.map(() => 0));
   const [barsReady, setBarsReady] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
   const rafRef = useRef<number>(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
 
@@ -61,7 +64,16 @@ export default function HeroSection() {
       animateTo(INITIAL);
     }, 600);
 
-    return () => clearTimeout(timeout);
+    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      clearTimeout(timeout);
+      subscription.unsubscribe();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -101,18 +113,31 @@ export default function HeroSection() {
             </p>
 
             <div className="mt-8 flex items-center gap-4">
-              <Link
-                href="/register"
-                className="rounded-lg bg-white px-6 py-3 text-sm font-bold tracking-tight text-black transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-white/20"
-              >
-                Get started
-              </Link>
-              <Link
-                href="/login"
-                className="text-sm font-medium tracking-tight text-zinc-400 transition-colors hover:text-white"
-              >
-                Sign in
-              </Link>
+              {user ? (
+                <button
+                  onClick={() => {
+                    document.getElementById("upload")?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="rounded-lg bg-white px-6 py-3 text-sm font-bold tracking-tight text-black transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-white/20"
+                >
+                  Drop your resume
+                </button>
+              ) : (
+                <>
+                  <Link
+                    href="/register"
+                    className="rounded-lg bg-white px-6 py-3 text-sm font-bold tracking-tight text-black transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-white/20"
+                  >
+                    Get started
+                  </Link>
+                  <Link
+                    href="/login"
+                    className="text-sm font-medium tracking-tight text-zinc-400 transition-colors hover:text-white"
+                  >
+                    Sign in
+                  </Link>
+                </>
+              )}
             </div>
 
             <div className="mt-6 flex flex-wrap gap-2">

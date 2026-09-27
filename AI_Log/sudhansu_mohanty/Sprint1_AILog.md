@@ -204,3 +204,171 @@
 
 **Prompt:**
 > can it not show at localhosr:3000 all the time
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> why was there an issue wiht the github pages>?
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> what should be done for this?
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> yes go ahead
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> i just realized the /dashboard/resume doesnt open on the same folder so it doesnt exist? like https://sudhansu-mohanty.github.io/SOEN341-launchpadai/# shows the websites but clicking My resumes opens up https://sudhansu-mohanty.github.io/dashboard/resume which doesnt show the resume upload feature
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> do you have a github extension?
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> so there are a fwe changes to be made in the frontend
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> there are parts which we need to COMMENT out not delete for the sprint 1 to keep things simple for the TA
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> comment the see your resume through a recruiter lens, and the FAQ section
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> also in the how it works section, the upload resume should be 3rd step instead of 2nd and make the numbers in the steps more visible and just white
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> theres a weird padding in the steps 1 and 2, make sure the boxes are the same and identical in structure not content
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> now we can start integrating it to the supabase
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> right now for sprint 1, just auth and maybe database for storing the emails and login info
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> yesss
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> teach me how it
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB5amFhdmp1dHpva3F0bHhtanp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyNzcxMTMsImV4cCI6MjEwNTg1MzExM30.chJJD-EnUllTscaH19A-0hBimLgv4CmLbq_LsZnOvbU
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> https://pyjaavjutzokqtlxmjzv.supabase.co
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> yes turn off email confirmation, lets test it but before that lets make a page for when the user logins. Now it can just show a box with the text Login successful, more content to come after sprint 2
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> i think once we log in, is should save the session? how to do that
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> how does it handle the frontend when we sign in? like i can still it shows to get started or sign-in and i think we need to change that
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> after the main login, make the sure page shows a button to go back to the homepage
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> add a heading to the resume pdf section, Drop your resume here
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> also once logged in, remove the get started and sign in button on the home page. Make no changes in the navbar
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> You can add the button to drop your resume and which pans down to the drop your resume dection
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> make sure the animation is smooth when it pans down
