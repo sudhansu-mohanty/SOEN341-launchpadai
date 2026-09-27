@@ -17,10 +17,13 @@ Job searching means juggling countless postings across scattered platforms, each
 Merging resume management, job discovery, and application tracking into a single platform eliminates the need to juggle multiple tools, tabs, and spreadsheets. Users gain a centralized view of their entire job search journey, thus reducing cognitive load, minimizing missed deadlines, and replacing scattered chaos with organized clarity and confidence.
 
 ## Technologies used </br>
-* JavaScript (Front-end)
-* React (UI)
-* Python (Back-end)
-* Supabase (Auth, API, Relational Database)
+- Next.js 14 — React framework (static export)
+- TypeScript — strict mode
+- Tailwind CSS v4 — styling
+- Supabase — auth + database
+- Three.js — shader background animation
+- motion/react — animations
+- GitHub Pages — hosting (CI via GitHub Actions)
 
 ## Setup Instructions </br>
 *  Install dependencies from package.json
