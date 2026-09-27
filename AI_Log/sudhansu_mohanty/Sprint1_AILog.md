@@ -372,3 +372,45 @@
 
 **Prompt:**
 > make sure the animation is smooth when it pans down
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> give me the perfect commit message for all we didi
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> too long
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> it faces issues with github pages?
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> are they env secrets or repo secrets?
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> i have added them, can you check
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> commit message?
