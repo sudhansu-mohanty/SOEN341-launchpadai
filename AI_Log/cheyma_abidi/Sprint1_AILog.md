@@ -3,6 +3,10 @@
 **Task Title:** Generating Effort Estimates and Review of Sprint Plan 1
 
 **Purpose of AI Use:** 
+- Estimating the effort estimates (in hours) for each issue in sprint plan 1
+- Receive a review for sprint plan 1
+
+**Prompt/Response:**
 
 **Validation:** 
 **Decision:** 
