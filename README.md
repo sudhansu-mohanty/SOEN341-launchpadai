@@ -1,5 +1,11 @@
 ﻿# SOEN341 - CareerConnect Web App
-**Team members: Sudhansu Mohanty, Cheyma Abidi, Othmane Balmouddane, Fatmagul Dedek, Ahcene Chouyoukh** </br>
+ 
+## Team members
+* Sudhansu Mohanty - 40292289
+* Cheyma Abidi - 40340971
+* Othmane Balmouddane - 40284183
+* Fatmagul Dedek - 40340486
+* Ahcene Chouyoukh - 40278160
 
 ## Project Description:</br>
 CarrerConnect is a web-based platform designed to help job seekers manage their job search activities. The system allows users to create profiles, upload and manage resumes, search for job opportunities, track submitted applications, and follow the progress of their application process. The platform aims to centralize job-search activities and help users stay organized throughout their career development journey.
