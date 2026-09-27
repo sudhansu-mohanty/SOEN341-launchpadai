@@ -77,3 +77,396 @@
   * Formatted subtasks into repository work items: **Task 4.1** (Provision private bucket with authenticated RLS policy), **Task 4.2** (Client-side drag-and-drop UI with format/size validation), and **Task 4.3** (Upload API integration and metadata persistence to profile)[cite: 5, 6].
 * **Reflection:** AI suggested the overall user need, but failed to address security, storage limits, and access controls[cite: 1]. Refining the story ourselves ensured that data isolation and RLS policies were accounted for prior to implementation[cite: 1, 5].
 * **Responsible Person:** Sudhansu Mohanty[cite: 1]
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> can you configure so as the github pages can be used for an early deploymenty
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> umm they dont show up, debug pls
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> 2.
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> analyse sprint 1 details and lmk what are the code implementations of all its in class-resources
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> right now we have a resume feedback website but we wanna add that later as a gen-ai feature
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> i wanna use supabase for auth and database
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> right now i just wanna make the frontend
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> resume upload for now for sprint 1, program management isnt required for sprint 1?
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> from now the app is called launchpadai
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> umm all the designs are gone, i just see the html?
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> yeah
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> here's what we do. before we changed, there was a resume upload directly from the homepage. Lets keep it on the homepage as well
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> umm im getting code 500
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> a few changes to the login and sign up page, make it a horizontal rectangle and on the right 50% there are some random testimonials for now that rotate and fade away top to bottom mentioning how helpful launchpad is
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+>   requireStack: [
+>     'C:\\Users\\sudha\\uni\\SOEN341\\coding\\frontend\\.next\\server\\webpack-runtime.js',
+>     'C:\\Users\\sudha\\uni\\SOEN341\\coding\\frontend\\.next\\server\\pages\\_document.js',
+>     'C:\\Users\\sudha\\uni\\SOEN341\\coding\\frontend\\node_modules\\next\\dist\\server\\require.js',
+>     'C:\\Users\\sudha\\uni\\SOEN341\\coding\\frontend\\node_modules\\next\\dist\\server\\load-components.js',
+>     'C:\\Users\\sudha\\uni\\SOEN341\\coding\\frontend\\node_modules\\next\\dist\\build\\utils.js',
+>     'C:\\Users\\sudha\\uni\\SOEN341\\coding\\frontend\\node_modules\\next\\dist\\server\\dev\\hot-middleware.js',
+>     'C:\\Users\\sudha\\uni\\SOEN341\\coding\\frontend\\node_modules\\next\\dist\\server\\dev\\hot-reloader-webpack.js',
+>     'C:\\Users\\sudha\\uni\\SOEN341\\coding\\frontend\\node_modules\\next\\dist\\server\\lib\\router-utils\\setup-dev-bundler.js',
+>     'C:\\Users\\sudha\\uni\\SOEN341\\coding\\frontend\\node_modules\\next\\dist\\server\\lib\\router-server.js',
+>     'C:\\Users\\sudha\\uni\\SOEN341\\coding\\frontend\\node_modules\\next\\dist\\server\\lib\\start-server.js'
+>   ],
+>   page: '/'
+> }
+>  GET / 500 in 14ms
+>  happening constantl;y?
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> can it not show at localhosr:3000 all the time
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> why was there an issue wiht the github pages>?
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> what should be done for this?
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> yes go ahead
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> i just realized the /dashboard/resume doesnt open on the same folder so it doesnt exist? like https://sudhansu-mohanty.github.io/SOEN341-launchpadai/# shows the websites but clicking My resumes opens up https://sudhansu-mohanty.github.io/dashboard/resume which doesnt show the resume upload feature
+
+---
+
+**Date:** 2026-09-26
+
+**Prompt:**
+> do you have a github extension?
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> so there are a fwe changes to be made in the frontend
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> there are parts which we need to COMMENT out not delete for the sprint 1 to keep things simple for the TA
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> comment the see your resume through a recruiter lens, and the FAQ section
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> also in the how it works section, the upload resume should be 3rd step instead of 2nd and make the numbers in the steps more visible and just white
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> theres a weird padding in the steps 1 and 2, make sure the boxes are the same and identical in structure not content
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> now we can start integrating it to the supabase
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> right now for sprint 1, just auth and maybe database for storing the emails and login info
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> yesss
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> teach me how it
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB5amFhdmp1dHpva3F0bHhtanp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyNzcxMTMsImV4cCI6MjEwNTg1MzExM30.chJJD-EnUllTscaH19A-0hBimLgv4CmLbq_LsZnOvbU
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> https://pyjaavjutzokqtlxmjzv.supabase.co
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> yes turn off email confirmation, lets test it but before that lets make a page for when the user logins. Now it can just show a box with the text Login successful, more content to come after sprint 2
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> i think once we log in, is should save the session? how to do that
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> how does it handle the frontend when we sign in? like i can still it shows to get started or sign-in and i think we need to change that
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> after the main login, make the sure page shows a button to go back to the homepage
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> add a heading to the resume pdf section, Drop your resume here
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> also once logged in, remove the get started and sign in button on the home page. Make no changes in the navbar
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> You can add the button to drop your resume and which pans down to the drop your resume dection
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> make sure the animation is smooth when it pans down
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> give me the perfect commit message for all we didi
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> too long
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> it faces issues with github pages?
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> are they env secrets or repo secrets?
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> i have added them, can you check
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> commit message?
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> make sure the upload and score button leads to /score on the webpage with a section just mentioning analysis coming soon
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> i just realized i should have an option to choose either you're a job-seeker or recruiter
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> on the register page just a toggle option like, "I'm a" recruiter or Job-skker
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> how is it saved in the backend
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> i wanna resuse my email to go through the option again, should i delete my email from supabase
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> whats that?
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> yes create it
+
+---
+
+**Date:** 2026-09-27
+
+**Prompt:**
+> commit message
