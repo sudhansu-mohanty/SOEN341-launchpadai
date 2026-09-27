@@ -1,4 +1,4 @@
-﻿# SOEN341 - CareerConnect Web App
+﻿# SOEN341 - LaunchPadAI Web App
  
 ## Team members
 * Sudhansu Mohanty - 40292289
