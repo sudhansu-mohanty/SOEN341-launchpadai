@@ -30,4 +30,5 @@ CarrerConnect is a web-based platform designed to help job seekers manage their 
 
 ## Proposed features </br>
 *  Swiping through job postings
-*  
+*  Resume scanner for tips
+*  Job Recommendation based on resume
