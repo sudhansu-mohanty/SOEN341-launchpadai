@@ -5,7 +5,7 @@
 **Purpose of AI Use:** Estimating the effort estimates (in hours) for each issue in sprint plan 1
 
 **Prompt/Response:**
-Prompt: 3 Add project description to
+Prompt: "3 Add project description to
 README 4 Prepare an initial login page 5
 Add installation guide on
 README 6 Test login page 7 Complete the backend 8 Add sprint plan to repository 9
@@ -30,7 +30,7 @@ resume upload (user didnt
 upload file) User Seeing the name of the
 uploaded file (user wants to
 see it) User Delete resume User final verdict (user uses all
-features in one session) User Review AI logs Task Complete last meeting minute                                 I know the format is messed up. there are 26 tasks. I want you to estimate the effort needed (in time) for each
+features in one session) User Review AI logs Task Complete last meeting minute                                 I know the format is messed up. there are 26 tasks. I want you to estimate the effort needed (in time) for each"
 
 Response: https://chatgpt.com/s/t_6ab89b39fb188191876b40926443fd21
 
