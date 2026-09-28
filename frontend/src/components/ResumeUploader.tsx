@@ -4,6 +4,8 @@ import { ChangeEvent, DragEvent, FormEvent, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ScoreResult } from "./ScoreCard";
 import { useScore, ScoreData } from "@/context/ScoreContext";
+import { supabase } from "@/lib/supabase";
+import { uploadResume } from "@/lib/storage";
 
 type Props = {
   onResult: (result: ScoreResult) => void;
@@ -79,7 +81,15 @@ export default function ResumeUploader({ onResult, onError, onScored }: Props) {
     setStatus("uploading");
     setErrorMessage("");
 
-    // Sprint 1: skip API call, navigate directly to /score placeholder
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await uploadResume(user.id, file);
+      }
+    } catch {
+      // Upload is best-effort here; scoring can proceed without it
+    }
+
     router.push("/score");
   };
 

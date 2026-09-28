@@ -1,46 +1,67 @@
 "use client";
 
-import { ChangeEvent, DragEvent, useRef, useState } from "react";
+import { ChangeEvent, DragEvent, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
-
-type ResumeFile = {
-  id: string;
-  name: string;
-  size: number;
-  uploadedAt: Date;
-};
+import { supabase } from "@/lib/supabase";
+import { uploadResume, listResumes, deleteResume, StoredResume } from "@/lib/storage";
 
 export default function ResumeUploadPage() {
-  const [resumes, setResumes] = useState<ResumeFile[]>([]);
+  const [resumes, setResumes] = useState<StoredResume[]>([]);
   const [dragging, setDragging] = useState(false);
   const [error, setError] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const router = useRouter();
 
-  const addFile = (file: File) => {
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (!data.user) {
+        router.push("/login");
+        return;
+      }
+      setUserId(data.user.id);
+      listResumes(data.user.id)
+        .then(setResumes)
+        .catch((err) => setError(err.message));
+    });
+  }, [router]);
+
+  const addFile = async (file: File) => {
     if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
       setError("Only PDF files are allowed.");
       return;
     }
-
-    if (resumes.some((r) => r.name === file.name)) {
-      setError("A file with this name already exists.");
+    if (!userId) {
+      setError("You must be logged in to upload.");
       return;
     }
 
     setError("");
-    setResumes((prev) => [
-      ...prev,
-      {
-        id: crypto.randomUUID(),
-        name: file.name,
-        size: file.size,
-        uploadedAt: new Date(),
-      },
-    ]);
+    setUploading(true);
+
+    try {
+      const stored = await uploadResume(userId, file);
+      setResumes((prev) => {
+        const filtered = prev.filter((r) => r.name !== stored.name);
+        return [stored, ...filtered];
+      });
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Upload failed.");
+    } finally {
+      setUploading(false);
+    }
   };
 
-  const removeFile = (id: string) => {
-    setResumes((prev) => prev.filter((r) => r.id !== id));
+  const removeFile = async (resume: StoredResume) => {
+    if (!userId) return;
+    try {
+      await deleteResume(userId, resume.name);
+      setResumes((prev) => prev.filter((r) => r.id !== resume.id));
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Delete failed.");
+    }
   };
 
   const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -87,7 +108,7 @@ export default function ResumeUploadPage() {
           <div
             role="button"
             tabIndex={0}
-            onClick={() => inputRef.current?.click()}
+            onClick={() => !uploading && inputRef.current?.click()}
             onDragOver={onDragOver}
             onDragLeave={onDragLeave}
             onDrop={onDrop}
@@ -95,13 +116,14 @@ export default function ResumeUploadPage() {
               dragging
                 ? "border-white/40 bg-white/5 shadow-lg shadow-white/5"
                 : "border-white/15 bg-white/[0.02] hover:border-white/25 hover:bg-white/[0.04]"
-            }`}
+            } ${uploading ? "pointer-events-none opacity-50" : ""}`}
           >
             <input
               ref={inputRef}
               type="file"
               accept="application/pdf"
               onChange={onFileChange}
+              disabled={uploading}
               className="hidden"
             />
 
@@ -122,7 +144,7 @@ export default function ResumeUploadPage() {
             </div>
 
             <p className="text-sm tracking-tight text-zinc-300">
-              Click to upload or drag and drop
+              {uploading ? "Uploading..." : "Click to upload or drag and drop"}
             </p>
             <p className="mt-1 text-xs tracking-tight text-zinc-600">PDF only</p>
           </div>
@@ -163,18 +185,25 @@ export default function ResumeUploadPage() {
                       </svg>
                     </div>
                     <div>
-                      <p className="text-sm font-medium tracking-tight text-white">
+                      <a
+                        href={resume.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm font-medium tracking-tight text-white hover:underline"
+                      >
                         {resume.name}
-                      </p>
+                      </a>
                       <p className="text-xs tracking-tight text-zinc-600">
-                        {formatSize(resume.size)} &middot;{" "}
-                        {resume.uploadedAt.toLocaleDateString()}
+                        {formatSize(resume.size)}
+                        {resume.uploadedAt && (
+                          <> &middot; {new Date(resume.uploadedAt).toLocaleDateString()}</>
+                        )}
                       </p>
                     </div>
                   </div>
 
                   <button
-                    onClick={() => removeFile(resume.id)}
+                    onClick={() => removeFile(resume)}
                     className="rounded-lg p-2 text-zinc-600 transition-colors hover:bg-white/5 hover:text-red-400"
                     title="Remove resume"
                   >
@@ -198,7 +227,7 @@ export default function ResumeUploadPage() {
           </div>
         )}
 
-        {resumes.length === 0 && (
+        {resumes.length === 0 && !uploading && (
           <div className="mt-12 text-center">
             <p className="text-sm tracking-tight text-zinc-600">
               No resumes uploaded yet. Upload your first resume to get started.
