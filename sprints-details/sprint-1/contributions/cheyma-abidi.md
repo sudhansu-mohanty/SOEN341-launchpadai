@@ -1,0 +1,46 @@
+# Sprint 1 Contributions — Cheyma Abidi
+
+**Role:** Reviewer/Tester
+**Period:** 2026-09-19 to 2026-09-27
+
+## Summary
+
+Reviewed and validated the project's initial frontend setup, GitHub Pages CI/CD pipeline, authentication and onboarding flows,
+and resume upload/storage functionality. 
+The main focus was ensuring that the implemented features are functional, deploy correctly, and are ready for testing and review.
+
+## Key Contributions
+
+### GitHub Repository Setup
+- Reviewed the initial GitHub repository setup and project organization
+- Verified that team members were added with the appropriate repository permissions
+- Reviewed the repository's base folder structure for documentation, meeting minutes, AI logs, and sprint deliverables
+- Verified the GitHub project board was configured for sprint and task tracking
+- Reviewed branch protection rules
+
+### Authentication & Onboarding
+- Reviewed the Login and Register pages and their expected user flows
+- Checked the authentication flow for successful and unsuccessful login scenarios
+- Verified that authenticated users can access the Dashboard
+
+### Resume Upload Feature
+- Reviewed the resume dashboard and file retrieval flow
+- Checked that uploaded resumes can be accessed through the intended authenticated flow
+
+### Code Quality / Project Structure
+- Verified that shared types are organized in a central location for use across Sprint 1 functionality
+- Reviewed the overall organization of the frontend components, pages, libraries, and types
+
+### Documentation
+- Added missing information to the README
+- Made, maintained and uploaded sprint planning 1
+
+## Pull Requests Merged
+
+| PR | Description |
+|----|-------------|
+| #23 | Update README, upload AI Log, upload sprint planning 1|
+| #25 | Upload Sudhansu's AI Log |
+
+
+
