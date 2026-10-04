@@ -39,9 +39,8 @@ The main focus was ensuring that the implemented features are functional, deploy
 
 | PR | Description |
 |----|-------------|
-| #16 | Add meeting minutes link to the repository |
-| #17 | Revise README with new project information |
-| #28 | Use signed URLs for Supabase storage and upgrade Next.js to v16 |
+| #23 | Add meeting minutes link to the repository |
+| #25 | Revise README with new project information |
 
 
 
