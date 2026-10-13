@@ -32,6 +32,15 @@ ALTER TABLE public.profiles
 -- Enable access control
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can read their own profile"
+ON public.profiles;
+
+DROP POLICY IF EXISTS "Users can create their own profile"
+ON public.profiles;
+
+DROP POLICY IF EXISTS "Users can update their own profile"
+ON public.profiles;
+
 -- Users read their own profile
 CREATE POLICY "Users can read their own profile"
 ON public.profiles
