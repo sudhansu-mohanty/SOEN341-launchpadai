@@ -1,11 +1,22 @@
 export type UserRole = "job_seeker" | "recruiter";
 
+
 export type Profile = {
   id: string;
   email: string;
   full_name: string;
   role: UserRole;
   resume_url?: string;
+
+  headline: string;
+  location: string;
+  summary: string;
+  skills: string[];
+  education: string;
+  experience: string;
+  portfolio_url: string;
+  linkedin_url: string;
+  updated_at: string;
 };
 
 export type Job = {
