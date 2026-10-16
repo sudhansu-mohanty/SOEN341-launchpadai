@@ -18,10 +18,18 @@ export type Job = {
   created_at: string;
 };
 
+import type { ApplicationStatus } from "@/lib/applications";
+
+export type { ApplicationStatus };
+
+// Row in the applications table (database/applications.sql)
 export type Application = {
   id: string;
   job_id: string;
-  applicant_id: string;
-  status: "pending" | "reviewed" | "accepted" | "rejected";
+  seeker_id: string;
+  resume_path: string;
+  cover_note: string | null;
+  status: ApplicationStatus;
   created_at: string;
+  updated_at: string;
 };

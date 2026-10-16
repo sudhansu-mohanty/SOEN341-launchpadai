@@ -9,6 +9,7 @@ import type { User } from "@supabase/supabase-js";
 const links = [
   { label: "Features", href: "#" },
   { label: "My Resumes", href: "/dashboard/resume" },
+  { label: "My Applications", href: "/dashboard/applications" },
 ];
 
 export default function Navbar() {
