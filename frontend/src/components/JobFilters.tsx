@@ -1,4 +1,5 @@
 import { Search, X } from "lucide-react";
+import Select from "@/components/Select";
 import type { WorkplaceType } from "@/types";
 import {
   DEFAULT_FILTERS,
@@ -13,9 +14,6 @@ type JobFiltersProps = {
   locations: string[];
   onChange: (filters: Filters) => void;
 };
-
-const selectClass =
-  "rounded-lg border border-white/10 bg-black px-3 py-2 text-sm tracking-tight text-zinc-300 outline-none transition-colors hover:border-white/20 focus:border-white/30";
 
 export default function JobFilters({ filters, locations, onChange }: JobFiltersProps) {
   const update = (changes: Partial<Filters>) => onChange({ ...filters, ...changes });
@@ -46,32 +44,22 @@ export default function JobFilters({ filters, locations, onChange }: JobFiltersP
 
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-2">
-        <select
-          aria-label="Location"
+        <Select
+          label="Location"
           value={filters.location}
-          onChange={(e) => update({ location: e.target.value })}
-          className={selectClass}
-        >
-          <option value="">All locations</option>
-          {locations.map((location) => (
-            <option key={location} value={location}>
-              {location}
-            </option>
-          ))}
-        </select>
+          options={[
+            { value: "", label: "All locations" },
+            ...locations.map((l) => ({ value: l, label: l })),
+          ]}
+          onChange={(location) => update({ location })}
+        />
 
-        <select
-          aria-label="Salary range"
+        <Select
+          label="Salary range"
           value={filters.salaryRange}
-          onChange={(e) => update({ salaryRange: Number(e.target.value) })}
-          className={selectClass}
-        >
-          {SALARY_RANGES.map((range, index) => (
-            <option key={range.label} value={index}>
-              {range.label}
-            </option>
-          ))}
-        </select>
+          options={SALARY_RANGES.map((r, i) => ({ value: i, label: r.label }))}
+          onChange={(salaryRange) => update({ salaryRange })}
+        />
 
         <div className="flex gap-1 rounded-lg border border-white/10 p-1">
           {(Object.keys(WORKPLACE_LABELS) as WorkplaceType[]).map((type) => {
@@ -92,16 +80,17 @@ export default function JobFilters({ filters, locations, onChange }: JobFiltersP
           })}
         </div>
 
-        <select
-          aria-label="Sort by"
+        <Select
+          label="Sort by"
           value={filters.sort}
-          onChange={(e) => update({ sort: e.target.value as SortOption })}
-          className={`${selectClass} sm:ml-auto`}
-        >
-          <option value="newest">Newest first</option>
-          <option value="salary_high">Salary: high to low</option>
-          <option value="salary_low">Salary: low to high</option>
-        </select>
+          options={[
+            { value: "newest", label: "Newest first" },
+            { value: "salary_high", label: "Salary: high to low" },
+            { value: "salary_low", label: "Salary: low to high" },
+          ]}
+          onChange={(sort: SortOption) => update({ sort })}
+          className="sm:ml-auto"
+        />
 
         {hasActiveFilters && (
           <button

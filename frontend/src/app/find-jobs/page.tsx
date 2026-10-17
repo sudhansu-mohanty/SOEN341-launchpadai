@@ -1,14 +1,22 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Briefcase } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import JobCard from "@/components/JobCard";
+import JobDetailPanel from "@/components/JobDetailPanel";
 import JobFilters from "@/components/JobFilters";
+import type { Job } from "@/types";
 import { DEFAULT_FILTERS, SAMPLE_JOBS, filterJobs, getLocations } from "@/lib/jobs";
 
 export default function FindJobsPage() {
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [appliedIds, setAppliedIds] = useState<Set<string>>(new Set());
+
+  // Placeholder: wire to the applications table once Supabase is connected.
+  const handleApply = (job: Job) => setAppliedIds((prev) => new Set(prev).add(job.id));
+  const closePanel = useCallback(() => setSelectedJob(null), []);
 
   const locations = useMemo(() => getLocations(SAMPLE_JOBS), []);
   const jobs = useMemo(() => filterJobs(SAMPLE_JOBS, filters), [filters]);
@@ -34,7 +42,14 @@ export default function FindJobsPage() {
         {jobs.length > 0 ? (
           <div className="grid gap-3">
             {jobs.map((job) => (
-              <JobCard key={job.id} job={job} />
+              <JobCard
+                key={job.id}
+                job={job}
+                applied={appliedIds.has(job.id)}
+                selected={selectedJob?.id === job.id}
+                onSelect={setSelectedJob}
+                onApply={handleApply}
+              />
             ))}
           </div>
         ) : (
@@ -51,6 +66,13 @@ export default function FindJobsPage() {
           </div>
         )}
       </div>
+
+      <JobDetailPanel
+        job={selectedJob}
+        applied={selectedJob ? appliedIds.has(selectedJob.id) : false}
+        onClose={closePanel}
+        onApply={handleApply}
+      />
     </main>
   );
 }

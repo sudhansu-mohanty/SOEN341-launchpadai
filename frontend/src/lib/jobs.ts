@@ -172,3 +172,39 @@ export function formatSalary(min: number, max: number): string {
   const k = (n: number) => `$${Math.round(n / 1000)}k`;
   return `${k(min)} – ${k(max)}`;
 }
+
+export type JobDetails = {
+  employmentType: string;
+  experience: string;
+  about: string;
+  responsibilities: string[];
+  requirements: string[];
+  benefits: string[];
+};
+
+// Dummy details until full postings are loaded from Supabase.
+export function getJobDetails(job: Job): JobDetails {
+  return {
+    employmentType: job.title.toLowerCase().includes("intern") ? "Internship" : "Full-time",
+    experience: job.title.toLowerCase().includes("junior") ? "0–2 years" : "2–5 years",
+    about: `${job.company} is looking for a ${job.title} to join the team in ${job.location}. ${job.description} You will collaborate closely with designers, product managers and fellow engineers in a supportive, fast-moving environment.`,
+    responsibilities: [
+      "Design, build and maintain high-quality features from planning to release",
+      "Collaborate with cross-functional teammates to define and ship new work",
+      "Review code, share knowledge and help raise the engineering bar",
+      "Monitor performance and quality, and fix issues quickly",
+    ],
+    requirements: [
+      "Degree in Computer Science, Software Engineering or equivalent experience",
+      "Strong problem-solving and communication skills",
+      "Comfortable working with Git and modern development workflows",
+      "Eagerness to learn and take ownership",
+    ],
+    benefits: [
+      "Extended health and dental coverage",
+      "Flexible vacation and personal days",
+      "Learning and development budget",
+      "Employee share or savings plan",
+    ],
+  };
+}
