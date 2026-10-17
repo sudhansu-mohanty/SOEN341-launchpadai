@@ -1,4 +1,4 @@
-import type { Job, WorkplaceType } from "@/types";
+import type { Job, JobSource, WorkplaceType } from "@/types";
 
 // Placeholder listings until jobs are loaded from Supabase.
 export const SAMPLE_JOBS: Job[] = [
@@ -13,6 +13,8 @@ export const SAMPLE_JOBS: Job[] = [
     workplace_type: "hybrid",
     posted_by: "recruiter-1",
     created_at: "2026-10-10T14:00:00Z",
+    deadline: "2026-11-05T23:59:59Z",
+    source: "launchpad",
   },
   {
     id: "2",
@@ -25,6 +27,8 @@ export const SAMPLE_JOBS: Job[] = [
     workplace_type: "in_person",
     posted_by: "recruiter-2",
     created_at: "2026-10-08T09:30:00Z",
+    deadline: "2026-10-30T23:59:59Z",
+    source: "external",
   },
   {
     id: "3",
@@ -37,6 +41,8 @@ export const SAMPLE_JOBS: Job[] = [
     workplace_type: "remote",
     posted_by: "recruiter-3",
     created_at: "2026-10-12T16:15:00Z",
+    deadline: "2026-11-15T23:59:59Z",
+    source: "launchpad",
   },
   {
     id: "4",
@@ -49,6 +55,8 @@ export const SAMPLE_JOBS: Job[] = [
     workplace_type: "hybrid",
     posted_by: "recruiter-4",
     created_at: "2026-10-05T11:00:00Z",
+    deadline: "2026-10-14T23:59:59Z",
+    source: "external",
   },
   {
     id: "5",
@@ -61,6 +69,8 @@ export const SAMPLE_JOBS: Job[] = [
     workplace_type: "hybrid",
     posted_by: "recruiter-5",
     created_at: "2026-10-11T13:45:00Z",
+    deadline: "2026-10-20T23:59:59Z",
+    source: "launchpad",
   },
   {
     id: "6",
@@ -73,6 +83,8 @@ export const SAMPLE_JOBS: Job[] = [
     workplace_type: "in_person",
     posted_by: "recruiter-6",
     created_at: "2026-10-03T10:20:00Z",
+    deadline: "2026-10-12T23:59:59Z",
+    source: "external",
   },
   {
     id: "7",
@@ -85,6 +97,8 @@ export const SAMPLE_JOBS: Job[] = [
     workplace_type: "remote",
     posted_by: "recruiter-7",
     created_at: "2026-10-09T15:00:00Z",
+    deadline: "2026-11-20T23:59:59Z",
+    source: "launchpad",
   },
   {
     id: "8",
@@ -97,6 +111,8 @@ export const SAMPLE_JOBS: Job[] = [
     workplace_type: "remote",
     posted_by: "recruiter-8",
     created_at: "2026-10-07T12:00:00Z",
+    deadline: "2026-10-25T23:59:59Z",
+    source: "external",
   },
 ];
 
@@ -105,6 +121,13 @@ export const WORKPLACE_LABELS: Record<WorkplaceType, string> = {
   hybrid: "Hybrid",
   in_person: "In-person",
 };
+
+export const SOURCE_LABELS: Record<JobSource, string> = {
+  launchpad: "LaunchpadAI",
+  external: "External",
+};
+
+export type SourceFilter = "all" | JobSource;
 
 export const SALARY_RANGES = [
   { label: "Any salary", min: 0, max: Infinity },
@@ -122,6 +145,7 @@ export type JobFilters = {
   salaryRange: number; // index into SALARY_RANGES
   workplaceTypes: WorkplaceType[]; // empty means any type
   sort: SortOption;
+  source: SourceFilter;
 };
 
 export const DEFAULT_FILTERS: JobFilters = {
@@ -130,6 +154,7 @@ export const DEFAULT_FILTERS: JobFilters = {
   salaryRange: 0,
   workplaceTypes: [],
   sort: "newest",
+  source: "all",
 };
 
 export function getLocations(jobs: Job[]): string[] {
@@ -149,6 +174,7 @@ export function filterJobs(jobs: Job[], filters: JobFilters): Job[] {
     ) {
       return false;
     }
+    if (filters.source !== "all" && job.source !== filters.source) return false;
     if (filters.location && job.location !== filters.location) return false;
     // A job matches when its salary band overlaps the selected range.
     if (job.salary_max <= range.min || job.salary_min >= range.max) return false;
@@ -162,6 +188,8 @@ export function filterJobs(jobs: Job[], filters: JobFilters): Job[] {
   });
 
   return matches.sort((a, b) => {
+    // Recruiter-posted jobs always sit above external ones.
+    if (a.source !== b.source) return a.source === "launchpad" ? -1 : 1;
     if (filters.sort === "salary_high") return b.salary_max - a.salary_max;
     if (filters.sort === "salary_low") return a.salary_min - b.salary_min;
     return b.created_at.localeCompare(a.created_at);
@@ -207,4 +235,25 @@ export function getJobDetails(job: Job): JobDetails {
       "Employee share or savings plan",
     ],
   };
+}
+
+export type DeadlineStatus = {
+  label: string;
+  closed: boolean;
+  urgent: boolean; // closes within a week
+};
+
+export function getDeadlineStatus(deadline: string): DeadlineStatus {
+  const end = new Date(deadline);
+  const daysLeft = Math.ceil((end.getTime() - Date.now()) / 86_400_000);
+  const date = end.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  if (daysLeft <= 0) return { label: `Closed ${date}`, closed: true, urgent: false };
+  if (daysLeft <= 7) {
+    return {
+      label: `Apply by ${date} · ${daysLeft} ${daysLeft === 1 ? "day" : "days"} left`,
+      closed: false,
+      urgent: true,
+    };
+  }
+  return { label: `Apply by ${date}`, closed: false, urgent: false };
 }

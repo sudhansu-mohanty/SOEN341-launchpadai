@@ -4,9 +4,11 @@ import type { WorkplaceType } from "@/types";
 import {
   DEFAULT_FILTERS,
   SALARY_RANGES,
+  SOURCE_LABELS,
   WORKPLACE_LABELS,
   type JobFilters as Filters,
   type SortOption,
+  type SourceFilter,
 } from "@/lib/jobs";
 
 type JobFiltersProps = {
@@ -30,16 +32,37 @@ export default function JobFilters({ filters, locations, onChange }: JobFiltersP
 
   return (
     <div className="space-y-4">
-      {/* Search bar */}
-      <div className="relative">
-        <Search className="pointer-events-none absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-zinc-500" />
-        <input
-          type="search"
-          value={filters.search}
-          onChange={(e) => update({ search: e.target.value })}
-          placeholder="Search by job title, company or keyword"
-          className="w-full rounded-xl border border-white/10 bg-white/[0.03] py-3 pr-4 pl-11 text-sm tracking-tight text-white placeholder:text-zinc-600 outline-none transition-colors focus:border-white/30"
-        />
+      {/* Search bar + source toggle */}
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative w-full sm:min-w-0 sm:flex-1">
+          <Search className="pointer-events-none absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+          <input
+            type="search"
+            value={filters.search}
+            onChange={(e) => update({ search: e.target.value })}
+            placeholder="Search by title, company or keyword"
+            className="w-full rounded-xl border border-white/10 bg-white/[0.03] py-2.5 pr-4 pl-11 text-sm tracking-tight text-white placeholder:text-zinc-600 outline-none transition-colors focus:border-white/30"
+          />
+        </div>
+
+        <div className="flex gap-1 rounded-xl border border-white/10 p-1">
+          {(["all", "launchpad", "external"] as SourceFilter[]).map((source) => {
+            const active = filters.source === source;
+            return (
+              <button
+                key={source}
+                type="button"
+                aria-pressed={active}
+                onClick={() => update({ source })}
+                className={`rounded-lg px-3 py-1.5 text-sm font-medium tracking-tight transition-colors ${
+                  active ? "bg-white text-black" : "text-zinc-400 hover:text-white"
+                }`}
+              >
+                {source === "all" ? "All jobs" : SOURCE_LABELS[source]}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Filters */}

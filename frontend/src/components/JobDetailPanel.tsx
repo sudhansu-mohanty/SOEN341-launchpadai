@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
-import { Building2, Clock, DollarSign, MapPin, X } from "lucide-react";
+import { Building2, CalendarClock, Clock, DollarSign, MapPin, X } from "lucide-react";
 import type { Job } from "@/types";
-import { WORKPLACE_LABELS, formatSalary, getJobDetails } from "@/lib/jobs";
+import { SOURCE_LABELS, WORKPLACE_LABELS, formatSalary, getDeadlineStatus, getJobDetails } from "@/lib/jobs";
 
 type JobDetailPanelProps = {
   job: Job | null;
@@ -37,6 +37,7 @@ export default function JobDetailPanel({ job, applied, onClose, onApply }: JobDe
 
   // Keep rendering the last job while the panel slides out.
   const details = job ? getJobDetails(job) : null;
+  const deadline = job ? getDeadlineStatus(job.deadline) : null;
 
   return (
     <>
@@ -55,7 +56,7 @@ export default function JobDetailPanel({ job, applied, onClose, onApply }: JobDe
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        {job && details && (
+        {job && details && deadline && (
           <>
             <div className="flex items-start justify-between gap-4 border-b border-white/10 px-6 py-5">
               <div>
@@ -89,9 +90,26 @@ export default function JobDetailPanel({ job, applied, onClose, onApply }: JobDe
                   <Clock className="h-4 w-4" />
                   Posted {new Date(job.created_at).toLocaleDateString()}
                 </span>
+                <span
+                  className={`flex items-center gap-1 ${
+                    deadline.closed ? "text-zinc-600" : deadline.urgent ? "text-amber-400" : ""
+                  }`}
+                >
+                  <CalendarClock className="h-4 w-4" />
+                  {deadline.label}
+                </span>
               </div>
 
               <div className="mt-4 flex flex-wrap gap-2">
+                <span
+                  className={`rounded-full border px-2.5 py-0.5 text-xs font-medium tracking-tight ${
+                    job.source === "launchpad"
+                      ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300"
+                      : "border-white/10 text-zinc-500"
+                  }`}
+                >
+                  {SOURCE_LABELS[job.source]}
+                </span>
                 {[WORKPLACE_LABELS[job.workplace_type], details.employmentType, details.experience].map(
                   (tag) => (
                     <span
@@ -117,11 +135,11 @@ export default function JobDetailPanel({ job, applied, onClose, onApply }: JobDe
             <div className="border-t border-white/10 px-6 py-4">
               <button
                 type="button"
-                disabled={applied}
+                disabled={applied || deadline.closed}
                 onClick={() => onApply(job)}
                 className="w-full rounded-full bg-white py-2.5 text-sm font-semibold tracking-tight text-black transition-colors hover:bg-zinc-200 disabled:cursor-default disabled:bg-white/10 disabled:text-zinc-400"
               >
-                {applied ? "Applied" : "Apply now"}
+                {applied ? "Applied" : deadline.closed ? "Applications closed" : "Apply now"}
               </button>
             </div>
           </>

@@ -1,6 +1,6 @@
-import { Building2, DollarSign, MapPin } from "lucide-react";
+import { Building2, CalendarClock, DollarSign, MapPin } from "lucide-react";
 import type { Job } from "@/types";
-import { WORKPLACE_LABELS, formatSalary } from "@/lib/jobs";
+import { SOURCE_LABELS, WORKPLACE_LABELS, formatSalary, getDeadlineStatus } from "@/lib/jobs";
 
 type JobCardProps = {
   job: Job;
@@ -11,6 +11,8 @@ type JobCardProps = {
 };
 
 export default function JobCard({ job, applied, selected, onSelect, onApply }: JobCardProps) {
+  const deadline = getDeadlineStatus(job.deadline);
+
   return (
     <article
       role="button"
@@ -34,9 +36,20 @@ export default function JobCard({ job, applied, selected, onSelect, onApply }: J
             {job.company}
           </p>
         </div>
-        <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-xs font-medium tracking-tight text-zinc-300">
-          {WORKPLACE_LABELS[job.workplace_type]}
-        </span>
+        <div className="flex items-center gap-2">
+          <span
+            className={`rounded-full border px-2.5 py-0.5 text-xs font-medium tracking-tight ${
+              job.source === "launchpad"
+                ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300"
+                : "border-white/10 text-zinc-500"
+            }`}
+          >
+            {SOURCE_LABELS[job.source]}
+          </span>
+          <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-xs font-medium tracking-tight text-zinc-300">
+            {WORKPLACE_LABELS[job.workplace_type]}
+          </span>
+        </div>
       </div>
 
       <p className="mt-3 text-sm tracking-tight text-zinc-500">{job.description}</p>
@@ -52,17 +65,26 @@ export default function JobCard({ job, applied, selected, onSelect, onApply }: J
             {formatSalary(job.salary_min, job.salary_max)}
           </span>
           <span>Posted {new Date(job.created_at).toLocaleDateString()}</span>
+          <span
+            className={`flex items-center gap-1 ${
+              deadline.closed ? "text-zinc-600" : deadline.urgent ? "text-amber-400" : ""
+            }`}
+          >
+            <CalendarClock className="h-3.5 w-3.5" />
+            {deadline.label}
+          </span>
         </div>
         <button
           type="button"
-          disabled={applied}
+          disabled={applied || deadline.closed}
           onClick={(e) => {
             e.stopPropagation();
+            // TODO: external jobs should open job.apply_url once SerpApi is wired up.
             onApply(job);
           }}
           className="rounded-full bg-white px-4 py-1.5 text-xs font-semibold tracking-tight text-black transition-colors hover:bg-zinc-200 disabled:cursor-default disabled:bg-white/10 disabled:text-zinc-400"
         >
-          {applied ? "Applied" : "Apply now"}
+          {applied ? "Applied" : deadline.closed ? "Closed" : "Apply now"}
         </button>
       </div>
     </article>

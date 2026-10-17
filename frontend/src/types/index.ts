@@ -10,6 +10,8 @@ export type Profile = {
 
 export type WorkplaceType = "remote" | "hybrid" | "in_person";
 
+export type JobSource = "launchpad" | "external";
+
 export type Job = {
   id: string;
   title: string;
@@ -21,6 +23,9 @@ export type Job = {
   workplace_type: WorkplaceType;
   posted_by: string;
   created_at: string;
+  deadline: string; // last day to apply (ISO timestamp)
+  source: JobSource; // "launchpad" = posted by a recruiter on LaunchpadAI
+  apply_url?: string; // external jobs apply on the original site
 };
 
 export type Application = {
