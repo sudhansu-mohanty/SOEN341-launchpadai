@@ -9,7 +9,6 @@ type JobRow = {
   id: string;
   title: string;
   location: string | null;
-  status: string | null;
   created_at: string;
   applications: { count: number }[];
 };
@@ -30,8 +29,8 @@ export default function RecruiterDashboardPage() {
 
       const { data, error } = await supabase
         .from("jobs")
-        .select("id, title, location, status, created_at, applications(count)")
-        .eq("recruiter_id", userData.user.id)
+        .select("id, title, location, created_at, applications(count)")
+        .eq("posted_by", userData.user.id)
         .order("created_at", { ascending: false });
 
       if (error) setError(error.message);
@@ -64,7 +63,6 @@ export default function RecruiterDashboardPage() {
                   <tr>
                     <th className="p-4 font-medium">Title</th>
                     <th className="p-4 font-medium">Location</th>
-                    <th className="p-4 font-medium">Status</th>
                     <th className="p-4 font-medium">Posted</th>
                     <th className="p-4 font-medium">Applicants</th>
                   </tr>
@@ -74,7 +72,6 @@ export default function RecruiterDashboardPage() {
                     <tr key={job.id} className="border-t border-white/5">
                       <td className="p-4">{job.title}</td>
                       <td className="p-4 text-zinc-400">{job.location ?? "-"}</td>
-                      <td className="p-4 text-zinc-400">{job.status ?? "-"}</td>
                       <td className="p-4 text-zinc-400">
                         {new Date(job.created_at).toLocaleDateString()}
                       </td>
