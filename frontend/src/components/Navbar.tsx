@@ -61,6 +61,14 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
+                    {user?.user_metadata?.role === "recruiter" && (
+            <Link
+              href="/recruiter"
+              className="rounded-md px-3 py-1.5 text-sm font-medium tracking-tight text-zinc-500 transition-colors hover:text-white"
+            >
+              My Postings
+            </Link>
+          )}
         </div>
 
         <div className="flex items-center gap-2">
