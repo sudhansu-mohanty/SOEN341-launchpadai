@@ -8,12 +8,17 @@ export type Profile = {
   resume_url?: string;
 };
 
+export type WorkplaceType = "remote" | "hybrid" | "in_person";
+
 export type Job = {
   id: string;
   title: string;
   company: string;
   location: string;
   description: string;
+  salary_min: number;
+  salary_max: number;
+  workplace_type: WorkplaceType;
   posted_by: string;
   created_at: string;
 };
