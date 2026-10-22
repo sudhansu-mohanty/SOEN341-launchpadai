@@ -1,6 +1,8 @@
-import type { Job, WorkplaceType } from "@/types";
+import { supabase } from "@/lib/supabase";
+import type { Job, JobSource, WorkplaceType } from "@/types";
 
-// Placeholder listings until jobs are loaded from Supabase.
+// Placeholder recruiter listings until jobs are loaded from Supabase.
+// External listings come from SerpAPI via fetchExternalJobs, not from here.
 export const SAMPLE_JOBS: Job[] = [
   {
     id: "1",
@@ -13,18 +15,8 @@ export const SAMPLE_JOBS: Job[] = [
     workplace_type: "hybrid",
     posted_by: "recruiter-1",
     created_at: "2026-10-10T14:00:00Z",
-  },
-  {
-    id: "2",
-    title: "Junior Software Engineer",
-    company: "Ubisoft",
-    location: "Montreal, QC",
-    description: "Work on internal tools for game production teams.",
-    salary_min: 60000,
-    salary_max: 75000,
-    workplace_type: "in_person",
-    posted_by: "recruiter-2",
-    created_at: "2026-10-08T09:30:00Z",
+    deadline: "2026-11-05T23:59:59Z",
+    source: "launchpad",
   },
   {
     id: "3",
@@ -37,18 +29,8 @@ export const SAMPLE_JOBS: Job[] = [
     workplace_type: "remote",
     posted_by: "recruiter-3",
     created_at: "2026-10-12T16:15:00Z",
-  },
-  {
-    id: "4",
-    title: "Data Analyst Intern",
-    company: "Desjardins",
-    location: "Quebec City, QC",
-    description: "Analyze customer data and build dashboards for business teams.",
-    salary_min: 40000,
-    salary_max: 50000,
-    workplace_type: "hybrid",
-    posted_by: "recruiter-4",
-    created_at: "2026-10-05T11:00:00Z",
+    deadline: "2026-11-15T23:59:59Z",
+    source: "launchpad",
   },
   {
     id: "5",
@@ -61,18 +43,8 @@ export const SAMPLE_JOBS: Job[] = [
     workplace_type: "hybrid",
     posted_by: "recruiter-5",
     created_at: "2026-10-11T13:45:00Z",
-  },
-  {
-    id: "6",
-    title: "QA Automation Engineer",
-    company: "CGI",
-    location: "Ottawa, ON",
-    description: "Write automated test suites for government client projects.",
-    salary_min: 70000,
-    salary_max: 90000,
-    workplace_type: "in_person",
-    posted_by: "recruiter-6",
-    created_at: "2026-10-03T10:20:00Z",
+    deadline: "2026-10-20T23:59:59Z",
+    source: "launchpad",
   },
   {
     id: "7",
@@ -85,26 +57,38 @@ export const SAMPLE_JOBS: Job[] = [
     workplace_type: "remote",
     posted_by: "recruiter-7",
     created_at: "2026-10-09T15:00:00Z",
-  },
-  {
-    id: "8",
-    title: "Mobile Developer",
-    company: "Hopper",
-    location: "Vancouver, BC",
-    description: "Build travel booking features in React Native.",
-    salary_min: 90000,
-    salary_max: 115000,
-    workplace_type: "remote",
-    posted_by: "recruiter-8",
-    created_at: "2026-10-07T12:00:00Z",
+    deadline: "2026-11-20T23:59:59Z",
+    source: "launchpad",
   },
 ];
+
+// Calls the Supabase Edge Function that proxies and caches SerpAPI Google Jobs results.
+// Returns null (rather than throwing) on any failure so callers can distinguish
+// "SerpAPI/network error" from "no results for this query".
+export async function fetchExternalJobs(q: string, location: string): Promise<Job[] | null> {
+  try {
+    const { data, error } = await supabase.functions.invoke("search-jobs", {
+      body: { q, location },
+    });
+    if (error || !Array.isArray(data)) return null;
+    return data as Job[];
+  } catch {
+    return null;
+  }
+}
 
 export const WORKPLACE_LABELS: Record<WorkplaceType, string> = {
   remote: "Remote",
   hybrid: "Hybrid",
   in_person: "In-person",
 };
+
+export const SOURCE_LABELS: Record<JobSource, string> = {
+  launchpad: "LaunchpadAI",
+  external: "External",
+};
+
+export type SourceFilter = "all" | JobSource;
 
 export const SALARY_RANGES = [
   { label: "Any salary", min: 0, max: Infinity },
@@ -122,6 +106,7 @@ export type JobFilters = {
   salaryRange: number; // index into SALARY_RANGES
   workplaceTypes: WorkplaceType[]; // empty means any type
   sort: SortOption;
+  source: SourceFilter;
 };
 
 export const DEFAULT_FILTERS: JobFilters = {
@@ -130,6 +115,7 @@ export const DEFAULT_FILTERS: JobFilters = {
   salaryRange: 0,
   workplaceTypes: [],
   sort: "newest",
+  source: "all",
 };
 
 export function getLocations(jobs: Job[]): string[] {
@@ -149,9 +135,17 @@ export function filterJobs(jobs: Job[], filters: JobFilters): Job[] {
     ) {
       return false;
     }
+    if (filters.source !== "all" && job.source !== filters.source) return false;
     if (filters.location && job.location !== filters.location) return false;
     // A job matches when its salary band overlaps the selected range.
-    if (job.salary_max <= range.min || job.salary_min >= range.max) return false;
+    // Jobs with unknown salary (e.g. external listings) can't be excluded by a salary filter.
+    if (
+      job.salary_min !== undefined &&
+      job.salary_max !== undefined &&
+      (job.salary_max <= range.min || job.salary_min >= range.max)
+    ) {
+      return false;
+    }
     if (
       filters.workplaceTypes.length > 0 &&
       !filters.workplaceTypes.includes(job.workplace_type)
@@ -162,13 +156,84 @@ export function filterJobs(jobs: Job[], filters: JobFilters): Job[] {
   });
 
   return matches.sort((a, b) => {
-    if (filters.sort === "salary_high") return b.salary_max - a.salary_max;
-    if (filters.sort === "salary_low") return a.salary_min - b.salary_min;
+    // Recruiter-posted jobs always sit above external ones.
+    if (a.source !== b.source) return a.source === "launchpad" ? -1 : 1;
+    // Jobs with unknown salary sort to the bottom of a salary-based sort.
+    if (filters.sort === "salary_high") return (b.salary_max ?? -Infinity) - (a.salary_max ?? -Infinity);
+    if (filters.sort === "salary_low") return (a.salary_min ?? Infinity) - (b.salary_min ?? Infinity);
     return b.created_at.localeCompare(a.created_at);
   });
 }
 
-export function formatSalary(min: number, max: number): string {
+export function formatSalary(min: number | undefined, max: number | undefined): string {
+  if (min === undefined || max === undefined) return "Not specified";
   const k = (n: number) => `$${Math.round(n / 1000)}k`;
   return `${k(min)} – ${k(max)}`;
+}
+
+// External listings (SerpAPI) often come as full multi-paragraph descriptions;
+// cap them for the card view so one job doesn't dwarf the rest of the list.
+export function truncate(text: string, maxLength = 180): string {
+  if (text.length <= maxLength) return text;
+  const cut = text.slice(0, maxLength);
+  const lastSpace = cut.lastIndexOf(" ");
+  return `${cut.slice(0, lastSpace > 0 ? lastSpace : maxLength)}…`;
+}
+
+export type JobDetails = {
+  employmentType: string;
+  experience: string;
+  about: string;
+  responsibilities: string[];
+  requirements: string[];
+  benefits: string[];
+};
+
+// Dummy details until full postings are loaded from Supabase.
+export function getJobDetails(job: Job): JobDetails {
+  return {
+    employmentType: job.title.toLowerCase().includes("intern") ? "Internship" : "Full-time",
+    experience: job.title.toLowerCase().includes("junior") ? "0–2 years" : "2–5 years",
+    about: `${job.company} is looking for a ${job.title} to join the team in ${job.location}. ${job.description} You will collaborate closely with designers, product managers and fellow engineers in a supportive, fast-moving environment.`,
+    responsibilities: [
+      "Design, build and maintain high-quality features from planning to release",
+      "Collaborate with cross-functional teammates to define and ship new work",
+      "Review code, share knowledge and help raise the engineering bar",
+      "Monitor performance and quality, and fix issues quickly",
+    ],
+    requirements: [
+      "Degree in Computer Science, Software Engineering or equivalent experience",
+      "Strong problem-solving and communication skills",
+      "Comfortable working with Git and modern development workflows",
+      "Eagerness to learn and take ownership",
+    ],
+    benefits: [
+      "Extended health and dental coverage",
+      "Flexible vacation and personal days",
+      "Learning and development budget",
+      "Employee share or savings plan",
+    ],
+  };
+}
+
+export type DeadlineStatus = {
+  label: string;
+  closed: boolean;
+  urgent: boolean; // closes within a week
+};
+
+export function getDeadlineStatus(deadline: string | undefined): DeadlineStatus {
+  if (!deadline) return { label: "No deadline listed", closed: false, urgent: false };
+  const end = new Date(deadline);
+  const daysLeft = Math.ceil((end.getTime() - Date.now()) / 86_400_000);
+  const date = end.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  if (daysLeft <= 0) return { label: `Closed ${date}`, closed: true, urgent: false };
+  if (daysLeft <= 7) {
+    return {
+      label: `Apply by ${date} · ${daysLeft} ${daysLeft === 1 ? "day" : "days"} left`,
+      closed: false,
+      urgent: true,
+    };
+  }
+  return { label: `Apply by ${date}`, closed: false, urgent: false };
 }

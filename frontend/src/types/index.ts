@@ -10,17 +10,22 @@ export type Profile = {
 
 export type WorkplaceType = "remote" | "hybrid" | "in_person";
 
+export type JobSource = "launchpad" | "external";
+
 export type Job = {
   id: string;
   title: string;
   company: string;
   location: string;
   description: string;
-  salary_min: number;
-  salary_max: number;
+  salary_min?: number;
+  salary_max?: number;
   workplace_type: WorkplaceType;
   posted_by: string;
   created_at: string;
+  deadline?: string; // last day to apply (ISO timestamp); external listings often don't have one
+  source: JobSource; // "launchpad" = posted by a recruiter on LaunchpadAI
+  apply_url?: string; // external jobs apply on the original site
 };
 
 export type Application = {
