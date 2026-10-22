@@ -136,7 +136,13 @@ export default function JobDetailPanel({ job, applied, onClose, onApply }: JobDe
               <button
                 type="button"
                 disabled={applied || deadline.closed}
-                onClick={() => onApply(job)}
+                onClick={() => {
+                  if (job.source === "external" && job.apply_url) {
+                    window.open(job.apply_url, "_blank", "noopener,noreferrer");
+                    return;
+                  }
+                  onApply(job);
+                }}
                 className="w-full rounded-full bg-white py-2.5 text-sm font-semibold tracking-tight text-black transition-colors hover:bg-zinc-200 disabled:cursor-default disabled:bg-white/10 disabled:text-zinc-400"
               >
                 {applied ? "Applied" : deadline.closed ? "Applications closed" : "Apply now"}

@@ -1,6 +1,8 @@
+import { supabase } from "@/lib/supabase";
 import type { Job, JobSource, WorkplaceType } from "@/types";
 
-// Placeholder listings until jobs are loaded from Supabase.
+// Placeholder recruiter listings until jobs are loaded from Supabase.
+// External listings come from SerpAPI via fetchExternalJobs, not from here.
 export const SAMPLE_JOBS: Job[] = [
   {
     id: "1",
@@ -17,20 +19,6 @@ export const SAMPLE_JOBS: Job[] = [
     source: "launchpad",
   },
   {
-    id: "2",
-    title: "Junior Software Engineer",
-    company: "Ubisoft",
-    location: "Montreal, QC",
-    description: "Work on internal tools for game production teams.",
-    salary_min: 60000,
-    salary_max: 75000,
-    workplace_type: "in_person",
-    posted_by: "recruiter-2",
-    created_at: "2026-10-08T09:30:00Z",
-    deadline: "2026-10-30T23:59:59Z",
-    source: "external",
-  },
-  {
     id: "3",
     title: "Full Stack Developer",
     company: "Wealthsimple",
@@ -43,20 +31,6 @@ export const SAMPLE_JOBS: Job[] = [
     created_at: "2026-10-12T16:15:00Z",
     deadline: "2026-11-15T23:59:59Z",
     source: "launchpad",
-  },
-  {
-    id: "4",
-    title: "Data Analyst Intern",
-    company: "Desjardins",
-    location: "Quebec City, QC",
-    description: "Analyze customer data and build dashboards for business teams.",
-    salary_min: 40000,
-    salary_max: 50000,
-    workplace_type: "hybrid",
-    posted_by: "recruiter-4",
-    created_at: "2026-10-05T11:00:00Z",
-    deadline: "2026-10-14T23:59:59Z",
-    source: "external",
   },
   {
     id: "5",
@@ -73,20 +47,6 @@ export const SAMPLE_JOBS: Job[] = [
     source: "launchpad",
   },
   {
-    id: "6",
-    title: "QA Automation Engineer",
-    company: "CGI",
-    location: "Ottawa, ON",
-    description: "Write automated test suites for government client projects.",
-    salary_min: 70000,
-    salary_max: 90000,
-    workplace_type: "in_person",
-    posted_by: "recruiter-6",
-    created_at: "2026-10-03T10:20:00Z",
-    deadline: "2026-10-12T23:59:59Z",
-    source: "external",
-  },
-  {
     id: "7",
     title: "Machine Learning Engineer",
     company: "Cohere",
@@ -100,21 +60,22 @@ export const SAMPLE_JOBS: Job[] = [
     deadline: "2026-11-20T23:59:59Z",
     source: "launchpad",
   },
-  {
-    id: "8",
-    title: "Mobile Developer",
-    company: "Hopper",
-    location: "Vancouver, BC",
-    description: "Build travel booking features in React Native.",
-    salary_min: 90000,
-    salary_max: 115000,
-    workplace_type: "remote",
-    posted_by: "recruiter-8",
-    created_at: "2026-10-07T12:00:00Z",
-    deadline: "2026-10-25T23:59:59Z",
-    source: "external",
-  },
 ];
+
+// Calls the Supabase Edge Function that proxies and caches SerpAPI Google Jobs results.
+// Returns null (rather than throwing) on any failure so callers can distinguish
+// "SerpAPI/network error" from "no results for this query".
+export async function fetchExternalJobs(q: string, location: string): Promise<Job[] | null> {
+  try {
+    const { data, error } = await supabase.functions.invoke("search-jobs", {
+      body: { q, location },
+    });
+    if (error || !Array.isArray(data)) return null;
+    return data as Job[];
+  } catch {
+    return null;
+  }
+}
 
 export const WORKPLACE_LABELS: Record<WorkplaceType, string> = {
   remote: "Remote",
@@ -177,7 +138,14 @@ export function filterJobs(jobs: Job[], filters: JobFilters): Job[] {
     if (filters.source !== "all" && job.source !== filters.source) return false;
     if (filters.location && job.location !== filters.location) return false;
     // A job matches when its salary band overlaps the selected range.
-    if (job.salary_max <= range.min || job.salary_min >= range.max) return false;
+    // Jobs with unknown salary (e.g. external listings) can't be excluded by a salary filter.
+    if (
+      job.salary_min !== undefined &&
+      job.salary_max !== undefined &&
+      (job.salary_max <= range.min || job.salary_min >= range.max)
+    ) {
+      return false;
+    }
     if (
       filters.workplaceTypes.length > 0 &&
       !filters.workplaceTypes.includes(job.workplace_type)
@@ -190,15 +158,26 @@ export function filterJobs(jobs: Job[], filters: JobFilters): Job[] {
   return matches.sort((a, b) => {
     // Recruiter-posted jobs always sit above external ones.
     if (a.source !== b.source) return a.source === "launchpad" ? -1 : 1;
-    if (filters.sort === "salary_high") return b.salary_max - a.salary_max;
-    if (filters.sort === "salary_low") return a.salary_min - b.salary_min;
+    // Jobs with unknown salary sort to the bottom of a salary-based sort.
+    if (filters.sort === "salary_high") return (b.salary_max ?? -Infinity) - (a.salary_max ?? -Infinity);
+    if (filters.sort === "salary_low") return (a.salary_min ?? Infinity) - (b.salary_min ?? Infinity);
     return b.created_at.localeCompare(a.created_at);
   });
 }
 
-export function formatSalary(min: number, max: number): string {
+export function formatSalary(min: number | undefined, max: number | undefined): string {
+  if (min === undefined || max === undefined) return "Not specified";
   const k = (n: number) => `$${Math.round(n / 1000)}k`;
   return `${k(min)} – ${k(max)}`;
+}
+
+// External listings (SerpAPI) often come as full multi-paragraph descriptions;
+// cap them for the card view so one job doesn't dwarf the rest of the list.
+export function truncate(text: string, maxLength = 180): string {
+  if (text.length <= maxLength) return text;
+  const cut = text.slice(0, maxLength);
+  const lastSpace = cut.lastIndexOf(" ");
+  return `${cut.slice(0, lastSpace > 0 ? lastSpace : maxLength)}…`;
 }
 
 export type JobDetails = {
@@ -243,7 +222,8 @@ export type DeadlineStatus = {
   urgent: boolean; // closes within a week
 };
 
-export function getDeadlineStatus(deadline: string): DeadlineStatus {
+export function getDeadlineStatus(deadline: string | undefined): DeadlineStatus {
+  if (!deadline) return { label: "No deadline listed", closed: false, urgent: false };
   const end = new Date(deadline);
   const daysLeft = Math.ceil((end.getTime() - Date.now()) / 86_400_000);
   const date = end.toLocaleDateString(undefined, { month: "short", day: "numeric" });

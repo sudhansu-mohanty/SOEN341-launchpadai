@@ -1,6 +1,6 @@
 import { Building2, CalendarClock, DollarSign, MapPin } from "lucide-react";
 import type { Job } from "@/types";
-import { SOURCE_LABELS, WORKPLACE_LABELS, formatSalary, getDeadlineStatus } from "@/lib/jobs";
+import { SOURCE_LABELS, WORKPLACE_LABELS, formatSalary, getDeadlineStatus, truncate } from "@/lib/jobs";
 
 type JobCardProps = {
   job: Job;
@@ -52,7 +52,7 @@ export default function JobCard({ job, applied, selected, onSelect, onApply }: J
         </div>
       </div>
 
-      <p className="mt-3 text-sm tracking-tight text-zinc-500">{job.description}</p>
+      <p className="mt-3 text-sm tracking-tight text-zinc-500">{truncate(job.description)}</p>
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs tracking-tight text-zinc-500">
@@ -79,7 +79,10 @@ export default function JobCard({ job, applied, selected, onSelect, onApply }: J
           disabled={applied || deadline.closed}
           onClick={(e) => {
             e.stopPropagation();
-            // TODO: external jobs should open job.apply_url once SerpApi is wired up.
+            if (job.source === "external" && job.apply_url) {
+              window.open(job.apply_url, "_blank", "noopener,noreferrer");
+              return;
+            }
             onApply(job);
           }}
           className="rounded-full bg-white px-4 py-1.5 text-xs font-semibold tracking-tight text-black transition-colors hover:bg-zinc-200 disabled:cursor-default disabled:bg-white/10 disabled:text-zinc-400"
