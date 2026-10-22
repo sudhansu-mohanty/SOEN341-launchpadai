@@ -466,6 +466,21 @@
 
 ---
 
+**Date:** 2026-10-20
+
+**Prompt:**
+> why aint it working? check the errors and resolve and keep a log
+
+**What AI did:**
+* Started the frontend dev server (`npm run dev` in `frontend/`) and inspected the Next.js dev log (`frontend/.next/dev/logs/next-development.log`).
+* Found the homepage was crashing with an uncaught error: `ShaderAnimation` (`src/components/ui/shader-animation.tsx`) called `new THREE.WebGLRenderer({ antialias: true })` with no error handling. In environments where a WebGL context can't be created (headless/sandboxed browser, GPU disabled, etc.), Three.js throws, and since the throw happened inside a `useEffect` with no boundary, React unmounted the whole `HomePage` — so the entire landing page went blank.
+* **Fix:** wrapped the `WebGLRenderer` creation in `shader-animation.tsx` in a `try/catch`. On failure it now logs a `console.warn`, disposes the geometry/material it already created, and returns early instead of throwing — the rest of the page renders normally, just without the background animation.
+* Verified the fix: Fast Refresh recompiled automatically, the browser console showed the new warning instead of the uncaught error, and `curl http://localhost:3000/` returned `200`. Also ran `npx tsc --noEmit`, which passed with no errors.
+* **Decision:** Modified before use — root cause (unguarded WebGL call) fixed directly in the component rather than just restarting the server, since the crash would recur for any viewer without WebGL support.
+* **Responsible Person:** Sudhansu Mohanty
+
+---
+
 **Date:** 2026-09-27
 
 **Prompt:**

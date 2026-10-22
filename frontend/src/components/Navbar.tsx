@@ -72,6 +72,14 @@ export default function Navbar() {
               >
                 Dashboard
               </Link>
+
+              <Link
+  href="/profile"
+  className="rounded-md px-4 py-2 text-sm font-medium tracking-tight text-zinc-400 transition-colors hover:text-white"
+>
+  My Profile
+</Link>
+              
               <button
                 onClick={async () => {
                   await supabase.auth.signOut();
