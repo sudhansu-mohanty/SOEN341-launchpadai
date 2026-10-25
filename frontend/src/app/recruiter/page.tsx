@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { supabase } from "@/lib/supabase";
+import { statusLabel, badgeClass } from "@/lib/applicationStatus";
 
 type JobRow = {
   id: string;
@@ -23,58 +24,134 @@ type Applicant = {
   name: string;
 };
 
-function statusLabel(status: string) {
-  const text = status.replace(/_/g, " ");
-  return text.charAt(0).toUpperCase() + text.slice(1);
-}
+const WORKPLACE_OPTIONS = [
+  { value: "remote", label: "Remote" },
+  { value: "hybrid", label: "Hybrid" },
+  { value: "in_person", label: "In person" },
+];
 
-function badgeClass(status: string) {
-  const s = status.toLowerCase().replace(/[\s_-]/g, "");
-  if (s === "underreview") return "bg-yellow-500/15 text-yellow-300";
-  if (s === "interview") return "bg-blue-500/15 text-blue-300";
-  if (s === "offered") return "bg-green-500/15 text-green-300";
-  if (s === "rejected") return "bg-red-500/15 text-red-300";
-  return "bg-white/10 text-zinc-300";
-}
+const emptyForm = {
+  title: "",
+  company: "",
+  location: "",
+  workplace_type: "",
+  description: "",
+  deadline: "",
+};
+
+const inputClass =
+  "w-full rounded-lg border border-white/10 bg-black px-3 py-2 text-sm text-white placeholder-zinc-600 outline-none focus:border-white/30 [color-scheme:dark]";
 
 export default function RecruiterDashboardPage() {
   const [jobs, setJobs] = useState<JobRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [userId, setUserId] = useState<string | null>(null);
+
   const [selectedJob, setSelectedJob] = useState<JobRow | null>(null);
   const [applicants, setApplicants] = useState<Applicant[]>([]);
   const [modalLoading, setModalLoading] = useState(false);
   const [modalError, setModalError] = useState("");
+
+  const [showCreate, setShowCreate] = useState(false);
+  const [form, setForm] = useState(emptyForm);
+  const [formError, setFormError] = useState("");
+  const [saving, setSaving] = useState(false);
+
   const router = useRouter();
 
+  const loadJobs = useCallback(async (uid: string) => {
+    const { data, error } = await supabase
+      .from("jobs")
+      .select("id, title, location, created_at, applications(count)")
+      .eq("posted_by", uid)
+      .order("created_at", { ascending: false });
+
+    if (error) setError(error.message);
+    else {
+      setError("");
+      setJobs((data as unknown as JobRow[]) ?? []);
+    }
+    setLoading(false);
+  }, []);
+
   useEffect(() => {
-    async function load() {
+    async function init() {
       const { data: userData } = await supabase.auth.getUser();
-      if (!userData.user) {
+      const user = userData.user;
+      if (!user) {
         router.push("/login");
         return;
       }
-
-      const { data, error } = await supabase
-        .from("jobs")
-        .select("id, title, location, created_at, applications(count)")
-        .eq("posted_by", userData.user.id)
-        .order("created_at", { ascending: false });
-
-      if (error) setError(error.message);
-      else setJobs((data as unknown as JobRow[]) ?? []);
-      setLoading(false);
+      if (user.user_metadata?.role !== "recruiter") {
+        router.push("/");
+        return;
+      }
+      setUserId(user.id);
+      await loadJobs(user.id);
     }
-    load();
-  }, [router]);
+    init();
+  }, [router, loadJobs]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setSelectedJob(null);
+      if (e.key === "Escape") {
+        setSelectedJob(null);
+        setShowCreate(false);
+      }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+
+  function updateField(field: keyof typeof emptyForm, value: string) {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  function openCreate() {
+    setForm(emptyForm);
+    setFormError("");
+    setShowCreate(true);
+  }
+
+  async function createJob() {
+    setFormError("");
+
+    const missing: string[] = [];
+    if (!form.title.trim()) missing.push("title");
+    if (!form.company.trim()) missing.push("company");
+    if (!form.location.trim()) missing.push("location");
+    if (!form.workplace_type) missing.push("job type");
+    if (!form.description.trim()) missing.push("description");
+    if (missing.length > 0) {
+      setFormError(`Please fill in: ${missing.join(", ")}.`);
+      return;
+    }
+    if (!userId) return;
+
+    setSaving(true);
+    const { error } = await supabase.from("jobs").insert({
+      title: form.title.trim(),
+      company: form.company.trim(),
+      location: form.location.trim(),
+      workplace_type: form.workplace_type,
+      description: form.description.trim(),
+      deadline: form.deadline
+        ? new Date(`${form.deadline}T23:59:59`).toISOString()
+        : null,
+      posted_by: userId,
+    });
+    setSaving(false);
+
+    if (error) {
+      setFormError(error.message);
+      return;
+    }
+
+    setShowCreate(false);
+    setForm(emptyForm);
+    await loadJobs(userId);
+  }
 
   async function openApplicants(job: JobRow) {
     setSelectedJob(job);
@@ -134,10 +211,20 @@ export default function RecruiterDashboardPage() {
     <main className="relative min-h-screen bg-black text-white">
       <Navbar />
       <div className="mx-auto max-w-5xl px-5 pt-28">
-        <h1 className="text-2xl font-bold tracking-tight">My Postings</h1>
-        <p className="mt-1 text-sm text-zinc-500">
-          Your job postings and how many people applied to each.
-        </p>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">My Postings</h1>
+            <p className="mt-1 text-sm text-zinc-500">
+              Your job postings and how many people applied to each.
+            </p>
+          </div>
+          <button
+            onClick={openCreate}
+            className="rounded-md bg-white px-4 py-2 text-sm font-semibold text-black transition-colors hover:bg-zinc-200"
+          >
+            Create posting
+          </button>
+        </div>
 
         <div className="mt-8 rounded-2xl border border-white/[0.08] p-1">
           <div className="overflow-x-auto rounded-xl border border-white/5 bg-black">
@@ -183,6 +270,110 @@ export default function RecruiterDashboardPage() {
           </div>
         </div>
       </div>
+
+      {showCreate && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 px-5">
+          <div className="max-h-[85vh] w-full max-w-xl overflow-y-auto rounded-2xl border border-white/10 bg-zinc-950 p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-bold tracking-tight">Create posting</h2>
+                <p className="mt-1 text-sm text-zinc-500">
+                  Job seekers will be able to find and apply to it.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowCreate(false)}
+                className="rounded-md px-2 py-1 text-sm text-zinc-400 hover:text-white"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="mt-6 space-y-4">
+              <div>
+                <label className="mb-1 block text-xs text-zinc-400">Title *</label>
+                <input
+                  className={inputClass}
+                  value={form.title}
+                  onChange={(e) => updateField("title", e.target.value)}
+                  placeholder="e.g. TEST Frontend Developer"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs text-zinc-400">Company *</label>
+                <input
+                  className={inputClass}
+                  value={form.company}
+                  onChange={(e) => updateField("company", e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs text-zinc-400">Location *</label>
+                <input
+                  className={inputClass}
+                  value={form.location}
+                  onChange={(e) => updateField("location", e.target.value)}
+                  placeholder="e.g. Montreal, QC"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs text-zinc-400">Job type *</label>
+                <select
+                  className={inputClass}
+                  value={form.workplace_type}
+                  onChange={(e) => updateField("workplace_type", e.target.value)}
+                >
+                  <option value="">Select...</option>
+                  {WORKPLACE_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="mb-1 block text-xs text-zinc-400">Description *</label>
+                <textarea
+                  className={inputClass}
+                  rows={5}
+                  value={form.description}
+                  onChange={(e) => updateField("description", e.target.value)}
+                  placeholder="Responsibilities, requirements..."
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs text-zinc-400">
+                  Application deadline (optional)
+                </label>
+                <input
+                  type="date"
+                  className={inputClass}
+                  value={form.deadline}
+                  onChange={(e) => updateField("deadline", e.target.value)}
+                />
+              </div>
+            </div>
+
+            {formError && <p className="mt-4 text-sm text-red-400">{formError}</p>}
+
+            <div className="mt-6 flex justify-end gap-2">
+              <button
+                onClick={() => setShowCreate(false)}
+                className="rounded-md border border-white/10 px-4 py-2 text-sm text-zinc-300 hover:bg-white/5"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={createJob}
+                disabled={saving}
+                className="rounded-md bg-white px-4 py-2 text-sm font-semibold text-black hover:bg-zinc-200 disabled:opacity-60"
+              >
+                {saving ? "Publishing..." : "Publish"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {selectedJob && (
         <div
