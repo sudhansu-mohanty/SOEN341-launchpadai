@@ -8,6 +8,19 @@ import JobDetailPanel from "@/components/JobDetailPanel";
 import JobFilters from "@/components/JobFilters";
 import type { Job } from "@/types";
 import { DEFAULT_FILTERS, SAMPLE_JOBS, fetchExternalJobs, filterJobs, getLocations } from "@/lib/jobs";
+import { supabase } from "@/lib/supabase";
+
+type DbJob = {
+  id: string;
+  title: string;
+  company: string | null;
+  location: string | null;
+  description: string | null;
+  workplace_type: Job["workplace_type"];
+  posted_by: string;
+  created_at: string;
+  deadline: string | null;
+};
 
 export default function FindJobsPage() {
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
@@ -16,10 +29,41 @@ export default function FindJobsPage() {
   const [externalJobs, setExternalJobs] = useState<Job[]>([]);
   const [externalLoading, setExternalLoading] = useState(false);
   const [externalError, setExternalError] = useState(false);
+  const [postedJobs, setPostedJobs] = useState<Job[]>([]);
 
   // Placeholder: wire to the applications table once Supabase is connected.
   const handleApply = (job: Job) => setAppliedIds((prev) => new Set(prev).add(job.id));
   const closePanel = useCallback(() => setSelectedJob(null), []);
+
+  // Jobs posted by recruiters (Supabase "jobs" table) show under LaunchPadAI.
+  useEffect(() => {
+    async function loadPostedJobs() {
+      const { data, error } = await supabase
+        .from("jobs")
+        .select("*")
+        .eq("status", "open")
+        .order("created_at", { ascending: false });
+      if (error || !data) {
+        console.error("Could not load posted jobs:", error?.message);
+        return;
+      }
+      setPostedJobs(
+        (data as DbJob[]).map((row) => ({
+          id: row.id,
+          title: row.title,
+          company: row.company ?? "",
+          location: row.location ?? "",
+          description: row.description ?? "",
+          workplace_type: row.workplace_type,
+          posted_by: row.posted_by,
+          created_at: row.created_at,
+          deadline: row.deadline ?? undefined,
+          source: "launchpad" as const,
+        }))
+      );
+    }
+    loadPostedJobs();
+  }, []);
 
   // Debounced fetch of live SerpAPI results; skipped entirely when the user
   // has filtered down to launchpad-only jobs, so we don't burn SerpAPI quota.
@@ -49,9 +93,11 @@ export default function FindJobsPage() {
     };
   }, [filters.search, filters.location, filters.source]);
 
+  const launchpadJobs = useMemo(() => [...postedJobs, ...SAMPLE_JOBS], [postedJobs]);
+
   const allJobs = useMemo(
-    () => (filters.source === "launchpad" ? SAMPLE_JOBS : [...SAMPLE_JOBS, ...externalJobs]),
-    [externalJobs, filters.source]
+    () => (filters.source === "launchpad" ? launchpadJobs : [...launchpadJobs, ...externalJobs]),
+    [launchpadJobs, externalJobs, filters.source]
   );
 
   const locations = useMemo(() => getLocations(allJobs), [allJobs]);

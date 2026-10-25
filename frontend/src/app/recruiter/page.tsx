@@ -9,7 +9,12 @@ import { statusLabel, badgeClass } from "@/lib/applicationStatus";
 type JobRow = {
   id: string;
   title: string;
+  company: string | null;
   location: string | null;
+  workplace_type: string | null;
+  description: string | null;
+  deadline: string | null;
+  status: "open" | "closed";
   created_at: string;
   applications: { count: number }[];
 };
@@ -54,6 +59,7 @@ export default function RecruiterDashboardPage() {
   const [modalError, setModalError] = useState("");
 
   const [showCreate, setShowCreate] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [formError, setFormError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -63,7 +69,9 @@ export default function RecruiterDashboardPage() {
   const loadJobs = useCallback(async (uid: string) => {
     const { data, error } = await supabase
       .from("jobs")
-      .select("id, title, location, created_at, applications(count)")
+      .select(
+        "id, title, company, location, workplace_type, description, deadline, status, created_at, applications(count)"
+      )
       .eq("posted_by", uid)
       .order("created_at", { ascending: false });
 
@@ -109,12 +117,27 @@ export default function RecruiterDashboardPage() {
   }
 
   function openCreate() {
+    setEditingId(null);
     setForm(emptyForm);
     setFormError("");
     setShowCreate(true);
   }
 
-  async function createJob() {
+  function openEdit(job: JobRow) {
+    setEditingId(job.id);
+    setForm({
+      title: job.title,
+      company: job.company ?? "",
+      location: job.location ?? "",
+      workplace_type: job.workplace_type ?? "",
+      description: job.description ?? "",
+      deadline: job.deadline ? new Date(job.deadline).toLocaleDateString("en-CA") : "",
+    });
+    setFormError("");
+    setShowCreate(true);
+  }
+
+  async function saveJob() {
     setFormError("");
 
     const missing: string[] = [];
@@ -129,8 +152,7 @@ export default function RecruiterDashboardPage() {
     }
     if (!userId) return;
 
-    setSaving(true);
-    const { error } = await supabase.from("jobs").insert({
+    const values = {
       title: form.title.trim(),
       company: form.company.trim(),
       location: form.location.trim(),
@@ -139,17 +161,58 @@ export default function RecruiterDashboardPage() {
       deadline: form.deadline
         ? new Date(`${form.deadline}T23:59:59`).toISOString()
         : null,
-      posted_by: userId,
-    });
-    setSaving(false);
+    };
 
-    if (error) {
-      setFormError(error.message);
-      return;
+    setSaving(true);
+    if (editingId) {
+      const { data, error } = await supabase
+        .from("jobs")
+        .update(values)
+        .eq("id", editingId)
+        .select("id");
+      setSaving(false);
+      if (error) {
+        setFormError(error.message);
+        return;
+      }
+      if (!data || data.length === 0) {
+        setFormError("Update was blocked (no permission to edit this job).");
+        return;
+      }
+    } else {
+      const { error } = await supabase
+        .from("jobs")
+        .insert({ ...values, posted_by: userId });
+      setSaving(false);
+      if (error) {
+        setFormError(error.message);
+        return;
+      }
     }
 
     setShowCreate(false);
+    setEditingId(null);
     setForm(emptyForm);
+    await loadJobs(userId);
+  }
+
+  async function toggleStatus(job: JobRow) {
+    if (!userId) return;
+    setError("");
+    const next = job.status === "open" ? "closed" : "open";
+    const { data, error } = await supabase
+      .from("jobs")
+      .update({ status: next })
+      .eq("id", job.id)
+      .select("id");
+    if (error) {
+      setError(error.message);
+      return;
+    }
+    if (!data || data.length === 0) {
+      setError("Update was blocked (no permission to change this job).");
+      return;
+    }
     await loadJobs(userId);
   }
 
@@ -230,42 +293,71 @@ export default function RecruiterDashboardPage() {
           <div className="overflow-x-auto rounded-xl border border-white/5 bg-black">
             {loading ? (
               <p className="p-8 text-zinc-500">Loading...</p>
-            ) : error ? (
+            ) : error && jobs.length === 0 ? (
               <p className="p-8 text-red-400">Error: {error}</p>
             ) : jobs.length === 0 ? (
               <p className="p-8 text-zinc-500">You have no postings yet.</p>
             ) : (
-              <table className="w-full text-left text-sm">
-                <thead className="text-zinc-500">
-                  <tr>
-                    <th className="p-4 font-medium">Title</th>
-                    <th className="p-4 font-medium">Location</th>
-                    <th className="p-4 font-medium">Posted</th>
-                    <th className="p-4 font-medium">Applicants</th>
-                    <th className="p-4 font-medium"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {jobs.map((job) => (
-                    <tr key={job.id} className="border-t border-white/5">
-                      <td className="p-4">{job.title}</td>
-                      <td className="p-4 text-zinc-400">{job.location ?? "-"}</td>
-                      <td className="p-4 text-zinc-400">
-                        {new Date(job.created_at).toLocaleDateString()}
-                      </td>
-                      <td className="p-4">{job.applications?.[0]?.count ?? 0}</td>
-                      <td className="p-4 text-right">
-                        <button
-                          onClick={() => openApplicants(job)}
-                          className="rounded-md border border-white/10 px-3 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/5 hover:text-white"
-                        >
-                          View applicants
-                        </button>
-                      </td>
+              <>
+                {error && <p className="p-4 text-sm text-red-400">Error: {error}</p>}
+                <table className="w-full text-left text-sm">
+                  <thead className="text-zinc-500">
+                    <tr>
+                      <th className="p-4 font-medium">Title</th>
+                      <th className="p-4 font-medium">Location</th>
+                      <th className="p-4 font-medium">Posted</th>
+                      <th className="p-4 font-medium">Status</th>
+                      <th className="p-4 font-medium">Applicants</th>
+                      <th className="p-4 font-medium"></th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {jobs.map((job) => (
+                      <tr key={job.id} className="border-t border-white/5">
+                        <td className="p-4">{job.title}</td>
+                        <td className="p-4 text-zinc-400">{job.location ?? "-"}</td>
+                        <td className="p-4 text-zinc-400">
+                          {new Date(job.created_at).toLocaleDateString()}
+                        </td>
+                        <td className="p-4">
+                          <span
+                            className={`rounded-full px-3 py-1 text-xs font-medium ${
+                              job.status === "open"
+                                ? "bg-emerald-500/15 text-emerald-300"
+                                : "bg-zinc-500/20 text-zinc-400"
+                            }`}
+                          >
+                            {job.status === "open" ? "Open" : "Closed"}
+                          </span>
+                        </td>
+                        <td className="p-4">{job.applications?.[0]?.count ?? 0}</td>
+                        <td className="p-4 text-right">
+                          <div className="flex justify-end gap-2">
+                            <button
+                              onClick={() => openApplicants(job)}
+                              className="rounded-md border border-white/10 px-3 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/5 hover:text-white"
+                            >
+                              View applicants
+                            </button>
+                            <button
+                              onClick={() => openEdit(job)}
+                              className="rounded-md border border-white/10 px-3 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/5 hover:text-white"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => toggleStatus(job)}
+                              className="rounded-md border border-white/10 px-3 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/5 hover:text-white"
+                            >
+                              {job.status === "open" ? "Close" : "Reopen"}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </>
             )}
           </div>
         </div>
@@ -276,9 +368,13 @@ export default function RecruiterDashboardPage() {
           <div className="max-h-[85vh] w-full max-w-xl overflow-y-auto rounded-2xl border border-white/10 bg-zinc-950 p-6">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h2 className="text-lg font-bold tracking-tight">Create posting</h2>
+                <h2 className="text-lg font-bold tracking-tight">
+                  {editingId ? "Edit posting" : "Create posting"}
+                </h2>
                 <p className="mt-1 text-sm text-zinc-500">
-                  Job seekers will be able to find and apply to it.
+                  {editingId
+                    ? "Update the details of this posting."
+                    : "Job seekers will be able to find and apply to it."}
                 </p>
               </div>
               <button
@@ -364,11 +460,11 @@ export default function RecruiterDashboardPage() {
                 Cancel
               </button>
               <button
-                onClick={createJob}
+                onClick={saveJob}
                 disabled={saving}
                 className="rounded-md bg-white px-4 py-2 text-sm font-semibold text-black hover:bg-zinc-200 disabled:opacity-60"
               >
-                {saving ? "Publishing..." : "Publish"}
+                {saving ? "Saving..." : editingId ? "Save changes" : "Publish"}
               </button>
             </div>
           </div>
