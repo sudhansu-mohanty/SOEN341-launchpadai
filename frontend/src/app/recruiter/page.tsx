@@ -35,6 +35,9 @@ const WORKPLACE_OPTIONS = [
   { value: "in_person", label: "In person" },
 ];
 
+// Must match the database enum application_status exactly.
+const STATUS_OPTIONS = ["Applied", "Under Review", "Interview", "Offered", "Rejected"];
+
 const emptyForm = {
   title: "",
   company: "",
@@ -256,6 +259,30 @@ export default function RecruiterDashboardPage() {
       }))
     );
     setModalLoading(false);
+  }
+
+  async function updateApplicantStatus(applicant: Applicant, next: string) {
+    if (next === applicant.status) return;
+    setModalError("");
+    const previous = applicants;
+
+    // Show the new status right away, undo it if the database refuses.
+    setApplicants((list) =>
+      list.map((a) => (a.id === applicant.id ? { ...a, status: next } : a))
+    );
+
+    const { data, error } = await supabase
+      .from("applications")
+      .update({ status: next })
+      .eq("id", applicant.id)
+      .select("id");
+
+    if (error || !data || data.length === 0) {
+      setApplicants(previous);
+      setModalError(
+        error?.message ?? "Update was blocked (no permission to change this application)."
+      );
+    }
   }
 
   async function viewResume(path: string) {
@@ -526,7 +553,7 @@ export default function RecruiterDashboardPage() {
                     {a.cover_note && (
                       <p className="mt-3 text-sm text-zinc-400">{a.cover_note}</p>
                     )}
-                    <div className="mt-3">
+                    <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
                       {a.resume_path ? (
                         <button
                           onClick={() => viewResume(a.resume_path as string)}
@@ -537,6 +564,20 @@ export default function RecruiterDashboardPage() {
                       ) : (
                         <span className="text-xs text-zinc-600">No resume</span>
                       )}
+                      <label className="flex items-center gap-2 text-xs text-zinc-500">
+                        Change status
+                        <select
+                          value={a.status}
+                          onChange={(e) => updateApplicantStatus(a, e.target.value)}
+                          className="rounded-md border border-white/10 bg-black px-2 py-1.5 text-xs text-white outline-none focus:border-white/30 [color-scheme:dark]"
+                        >
+                          {STATUS_OPTIONS.map((s) => (
+                            <option key={s} value={s}>
+                              {s}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
                     </div>
                   </div>
                 ))
