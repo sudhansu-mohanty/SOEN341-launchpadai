@@ -9,17 +9,17 @@ Helped plan sprint deliverables, break down requirements into development tasks 
 
 ## Key Contributions
 
-### Sprint Planning & Task Breakdown (with Sudhansu)
+### Sprint Planning & Task Breakdown (with Sudhansu): 1 hr 45
 - Participated in planning Sprint 2 deliverables and identifying the work required to implement features.
 - Broke down larger requirements into smaller development tasks.
 - Helped clarify feature scope, implementation steps and task dependencies.
 
-### Resume Management 
+### Resume Management: 4 hr 30
 - Took responsibility for resume management functionality beyond the initial resume upload flow.
 - Worked on organizing and managing resumes within the application.
 - Contributed to the resume management user experience and integration with the existing application.
 
-### Profile Management
+### Profile Management: 7 hours
 - Took responsibility for implementing profile management functionality.
 - Worked on enabling users to view and manage their profile information within the application.
 - Contributed to the profile management interface and its integration with the existing application structure.
