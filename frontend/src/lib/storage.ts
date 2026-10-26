@@ -71,3 +71,49 @@ export async function deleteResume(userId: string, filename: string): Promise<vo
   const { error } = await supabase.storage.from(BUCKET).remove([path]);
   if (error) throw new Error(error.message);
 }
+
+export async function replaceResume(
+  userId: string,
+  oldFilename: string,
+  file: File
+): Promise<StoredResume> {
+  // upload the new file 
+  const newPath = userPath(userId, file.name);
+
+  const { error: uploadError } = await supabase.storage
+    .from(BUCKET)
+    .upload(newPath, file, { upsert: true });
+
+  if (uploadError) throw new Error(uploadError.message);
+
+  // delete old file 
+  const oldPath = userPath(userId, oldFilename);
+
+  if (oldPath !== newPath) {
+    const { error: deleteError } = await supabase.storage
+      .from(BUCKET)
+      .remove([oldPath]);
+
+    if (deleteError) {
+      throw new Error(
+        `New resume uploaded, but the old resume could not be deleted: ${deleteError.message}`
+      );
+    }
+  }
+
+  const { data: urlData, error: urlError } = await supabase.storage
+    .from(BUCKET)
+    .createSignedUrl(newPath, 60 * 60);
+
+  if (urlError || !urlData?.signedUrl) {
+    throw new Error("Resume uploaded, but failed to generate its URL.");
+  }
+
+  return {
+    id: newPath,
+    name: file.name,
+    size: file.size,
+    uploadedAt: new Date().toISOString(),
+    url: urlData.signedUrl,
+  };
+}
