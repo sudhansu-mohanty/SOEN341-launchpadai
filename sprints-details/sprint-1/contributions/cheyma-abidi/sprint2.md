@@ -5,7 +5,7 @@
 ## Summary
 
 Contributed to Sprint 2 by taking responsibility for resume management (excluding resume upload) and profile management.
-Helped plan sprint deliverables, break down requirements into manageable development tasks, and organize implementation work to support the team's progress throughout the sprint.
+Helped plan sprint deliverables, break down requirements into development tasks and organize implementation work to support the team's progress throughout the sprint.
 
 ## Key Contributions
 
