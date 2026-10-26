@@ -31,3 +31,15 @@ Helped plan sprint deliverables, break down requirements into manageable develop
 | TBD | Sprint 2 resume management changes |
 | TBD | Sprint 2 profile management changes |
 
+## Issues
+
+| Issue | Link |
+|----|-------------|
+| 2.01 / 63 (User Story) | https://github.com/sudhansu-mohanty/SOEN341-launchpadai/issues/63 |
+| 2.02 / 64 (User Story) | https://github.com/sudhansu-mohanty/SOEN341-launchpadai/issues/64 |
+| 2.03 / 65 (User Story) | https://github.com/sudhansu-mohanty/SOEN341-launchpadai/issues/65 |
+| 70 (Acceptance Tests for 2.01 / 63) | https://github.com/sudhansu-mohanty/SOEN341-launchpadai/issues/70 |
+| 71 (Acceptance Tests for 2.02 / 64) | https://github.com/sudhansu-mohanty/SOEN341-launchpadai/issues/71 |
+| 72 (Acceptance Tests for 2.03 / 65) | https://github.com/sudhansu-mohanty/SOEN341-launchpadai/issues/72 |
+
+
