@@ -10,6 +10,7 @@ const links = [
   { label: "Features", href: "#" },
   { label: "My Resumes", href: "/dashboard/resume" },
   { label: "Find Jobs", href: "/find-jobs" },
+  { label: "My Applications", href: "/dashboard/applications" },
 ];
 
 const hiddenForRecruiters = ["My Resumes", "Find Jobs"];

@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { ReactNode } from "react";
 import { ScoreProvider } from "@/context/ScoreContext";
+import { ToastProvider } from "@/context/ToastContext";
 
 export const metadata = {
   title: "LaunchPadAI — Job Search & Application Tracking",
@@ -30,7 +31,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
         />
       </head>
       <body className="bg-black text-white antialiased">
-        <ScoreProvider>{children}</ScoreProvider>
+        <ScoreProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </ScoreProvider>
       </body>
     </html>
   );
