@@ -24,12 +24,22 @@ Helped plan sprint deliverables, break down requirements into manageable develop
 - Worked on enabling users to view and manage their profile information within the application.
 - Contributed to the profile management interface and its integration with the existing application structure.
 
-## Pull Requests Merged
+## Commits
 
-| PR | Description |
+| Commit | Link |
 |----|-------------|
-| TBD | Sprint 2 resume management changes |
-| TBD | Sprint 2 profile management changes |
+| c52f1f4 | https://github.com/sudhansu-mohanty/SOEN341-launchpadai/commit/c52f1f4 |
+| 052f7b4 | https://github.com/sudhansu-mohanty/SOEN341-launchpadai/commit/052f7b4 |
+| 782075f | https://github.com/sudhansu-mohanty/SOEN341-launchpadai/commit/782075f |
+| 0f6d022 | https://github.com/sudhansu-mohanty/SOEN341-launchpadai/commit/0f6d022 |
+| 049a14d | https://github.com/sudhansu-mohanty/SOEN341-launchpadai/commit/049a14d |
+| 893fa0a | https://github.com/sudhansu-mohanty/SOEN341-launchpadai/commit/893fa0a |
+
+## Pull Request Merged
+
+| PR | Link |
+|----|-------------|
+| 59 | https://github.com/sudhansu-mohanty/SOEN341-launchpadai/pull/59 |
 
 ## Issues
 
