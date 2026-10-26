@@ -49,7 +49,16 @@ export type Application = {
   job_id: string;
   seeker_id: string;
   resume_path: string;
-  cover_note: string | null;
+  cover_letter_path?: string | null;
+  first_name?: string | null;
+  last_name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  degree?: string | null;
+  country?: string | null;
+  authorized_to_work_ca?: boolean | null;
+  requires_sponsorship?: boolean | null;
+  skills?: string[] | null;
   status: ApplicationStatus;
   created_at: string;
   updated_at: string;

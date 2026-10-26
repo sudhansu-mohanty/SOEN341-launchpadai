@@ -24,10 +24,36 @@ type Applicant = {
   seeker_id: string;
   status: string;
   resume_path: string | null;
-  cover_note: string | null;
+  cover_letter_path: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  email: string | null;
+  phone: string | null;
+  degree: string | null;
+  country: string | null;
+  authorized_to_work_ca: boolean | null;
+  requires_sponsorship: boolean | null;
+  skills: string[] | null;
   created_at: string;
   name: string;
 };
+
+
+const APPLICANT_COLUMNS =
+  "id, seeker_id, status, resume_path, cover_letter_path, first_name, last_name, email, phone, degree, country, authorized_to_work_ca, requires_sponsorship, skills, created_at";
+
+const yesNo = (value: boolean) => (value ? "Yes" : "No");
+
+function Detail({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex gap-2">
+      <dt className="shrink-0 text-zinc-500">{label}</dt>
+      <dd className="min-w-0 break-words text-zinc-300">{children}</dd>
+    </div>
+  );
+}
+
+
 
 const WORKPLACE_OPTIONS = [
   { value: "remote", label: "Remote" },
@@ -227,7 +253,7 @@ export default function RecruiterDashboardPage() {
 
     const { data, error } = await supabase
       .from("applications")
-      .select("id, seeker_id, status, resume_path, cover_note, created_at")
+      .select(APPLICANT_COLUMNS)
       .eq("job_id", job.id)
       .order("created_at", { ascending: false });
 
@@ -240,11 +266,15 @@ export default function RecruiterDashboardPage() {
     const rows = (data ?? []) as Omit<Applicant, "name">[];
     const names: Record<string, string> = {};
 
-    if (rows.length > 0) {
+
+    // Applications sent before the apply form collected a name have no first/last name,
+    // so for those fall back to the name on the seeker's profile.
+    const needProfileName = rows.filter((r) => !r.first_name && !r.last_name);
+    if (needProfileName.length > 0) {
       const { data: profiles } = await supabase
         .from("profiles")
         .select("id, full_name")
-        .in("id", rows.map((r) => r.seeker_id));
+        .in("id", needProfileName.map((r) => r.seeker_id));
       ((profiles ?? []) as { id: string; full_name: string | null }[]).forEach(
         (p) => {
           if (p.full_name) names[p.id] = p.full_name;
@@ -252,12 +282,17 @@ export default function RecruiterDashboardPage() {
       );
     }
 
+
     setApplicants(
       rows.map((r) => ({
         ...r,
-        name: names[r.seeker_id] ?? `Applicant ${r.seeker_id.slice(0, 8)}`,
+        name:
+          `${r.first_name ?? ""} ${r.last_name ?? ""}`.trim() ||
+          names[r.seeker_id] ||
+          `Applicant ${r.seeker_id.slice(0, 8)}`,
       }))
     );
+
     setModalLoading(false);
   }
 
@@ -285,13 +320,15 @@ export default function RecruiterDashboardPage() {
     }
   }
 
-  async function viewResume(path: string) {
+
+  // Opens a private file (resume or cover letter) through a short-lived signed link.
+  async function viewDocument(path: string, label: string) {
     setModalError("");
     const { data, error } = await supabase.storage
       .from("resumes")
       .createSignedUrl(path, 60);
     if (error || !data) {
-      setModalError(error?.message ?? "Could not open the resume.");
+      setModalError(error?.message ?? `Could not open the ${label}.`);
       return;
     }
     window.open(data.signedUrl, "_blank", "noopener,noreferrer");
@@ -315,7 +352,7 @@ export default function RecruiterDashboardPage() {
             Create posting
           </button>
         </div>
-
+ 
         <div className="mt-8 rounded-2xl border border-white/[0.08] p-1">
           <div className="overflow-x-auto rounded-xl border border-white/5 bg-black">
             {loading ? (
@@ -389,7 +426,7 @@ export default function RecruiterDashboardPage() {
           </div>
         </div>
       </div>
-
+ 
       {showCreate && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 px-5">
           <div className="max-h-[85vh] w-full max-w-xl overflow-y-auto rounded-2xl border border-white/10 bg-zinc-950 p-6">
@@ -411,7 +448,7 @@ export default function RecruiterDashboardPage() {
                 Close
               </button>
             </div>
-
+ 
             <div className="mt-6 space-y-4">
               <div>
                 <label className="mb-1 block text-xs text-zinc-400">Title *</label>
@@ -476,9 +513,9 @@ export default function RecruiterDashboardPage() {
                 />
               </div>
             </div>
-
+ 
             {formError && <p className="mt-4 text-sm text-red-400">{formError}</p>}
-
+ 
             <div className="mt-6 flex justify-end gap-2">
               <button
                 onClick={() => setShowCreate(false)}
@@ -497,7 +534,7 @@ export default function RecruiterDashboardPage() {
           </div>
         </div>
       )}
-
+ 
       {selectedJob && (
         <div
           className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 px-5"
@@ -519,11 +556,11 @@ export default function RecruiterDashboardPage() {
                 Close
               </button>
             </div>
-
+ 
             {modalError && (
               <p className="mt-4 text-sm text-red-400">Error: {modalError}</p>
             )}
-
+ 
             <div className="mt-6 space-y-3">
               {modalLoading ? (
                 <p className="text-zinc-500">Loading...</p>
@@ -550,20 +587,68 @@ export default function RecruiterDashboardPage() {
                         {statusLabel(a.status)}
                       </span>
                     </div>
-                    {a.cover_note && (
-                      <p className="mt-3 text-sm text-zinc-400">{a.cover_note}</p>
+                    <dl className="mt-3 grid gap-x-6 gap-y-1.5 text-sm sm:grid-cols-2">
+                      {a.email && (
+                        <Detail label="Email">
+                          <a
+                            href={`mailto:${a.email}`}
+                            className="underline underline-offset-2 hover:text-white"
+                          >
+                            {a.email}
+                          </a>
+                        </Detail>
+                      )}
+                      {a.phone && <Detail label="Phone">{a.phone}</Detail>}
+                      {a.degree && <Detail label="Degree">{a.degree}</Detail>}
+                      {a.country && <Detail label="Country">{a.country}</Detail>}
+                      {a.authorized_to_work_ca !== null && (
+                        <Detail label="Authorized to work in Canada">
+                          {yesNo(a.authorized_to_work_ca)}
+                        </Detail>
+                      )}
+                      {a.requires_sponsorship !== null && (
+                        <Detail label="Needs sponsorship">
+                          {yesNo(a.requires_sponsorship)}
+                        </Detail>
+                      )}
+                    </dl>
+                    {a.skills && a.skills.length > 0 && (
+                      <div className="mt-3 flex flex-wrap gap-1.5">
+                        {a.skills.map((skill) => (
+                          <span
+                            key={skill}
+                            className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-xs text-zinc-300"
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
                     )}
                     <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-                      {a.resume_path ? (
-                        <button
-                          onClick={() => viewResume(a.resume_path as string)}
-                          className="rounded-md bg-white px-3 py-1.5 text-xs font-semibold text-black hover:bg-zinc-200"
-                        >
-                          View resume
-                        </button>
-                      ) : (
-                        <span className="text-xs text-zinc-600">No resume</span>
-                      )}
+                      <div className="flex flex-wrap items-center gap-2">
+                        {a.resume_path ? (
+                          <button
+                            onClick={() => viewDocument(a.resume_path as string, "resume")}
+                            className="rounded-md bg-white px-3 py-1.5 text-xs font-semibold text-black hover:bg-zinc-200"
+                          >
+                            View resume
+                          </button>
+                        ) : (
+                          <span className="text-xs text-zinc-600">No resume</span>
+                        )}
+                        {a.cover_letter_path ? (
+                          <button
+                            onClick={() =>
+                              viewDocument(a.cover_letter_path as string, "cover letter")
+                            }
+                            className="rounded-md border border-white/15 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/10"
+                          >
+                            View cover letter
+                          </button>
+                        ) : (
+                          <span className="text-xs text-zinc-600">No cover letter</span>
+                        )}
+                      </div>
                       <label className="flex items-center gap-2 text-xs text-zinc-500">
                         Change status
                         <select

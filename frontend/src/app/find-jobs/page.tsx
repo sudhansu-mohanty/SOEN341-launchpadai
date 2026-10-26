@@ -1,8 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Bookmark, Briefcase } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import ApplyModal from "@/components/ApplyModal";
 import JobCard from "@/components/JobCard";
 import JobDetailPanel from "@/components/JobDetailPanel";
 import JobFilters from "@/components/JobFilters";
@@ -10,6 +12,8 @@ import SavedJobsDrawer from "@/components/SavedJobsDrawer";
 import type { Job } from "@/types";
 import { DEFAULT_FILTERS, SAMPLE_JOBS, fetchExternalJobs, filterJobs, getLocations } from "@/lib/jobs";
 import { supabase } from "@/lib/supabase";
+import { getAppliedJobIds } from "@/lib/applications";
+import { useToast } from "@/context/ToastContext";
 
 type DbJob = {
   id: string;
@@ -24,6 +28,8 @@ type DbJob = {
 };
 
 export default function FindJobsPage() {
+  const router = useRouter();
+  const { showToast } = useToast();
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [appliedIds, setAppliedIds] = useState<Set<string>>(new Set());
@@ -34,11 +40,26 @@ export default function FindJobsPage() {
   const [savedJobs, setSavedJobs] = useState<Job[]>([]);
   const [saveError, setSaveError] = useState("");
   const [showSaved, setShowSaved] = useState(false);
+  const [applyingJob, setApplyingJob] = useState<Job | null>(null);
 
-  // Placeholder: wire to the applications table once Supabase is connected.
-  const handleApply = (job: Job) => setAppliedIds((prev) => new Set(prev).add(job.id));
+
+
+  // "Apply now" opens the apply modal for this job; does the supabase insert
+  const handleApply = (job: Job) => setApplyingJob(job);
+  const closeApply = useCallback(() => setApplyingJob(null), []);
+  const markApplied = useCallback(
+    (jobId: string) => setAppliedIds((prev) => new Set(prev).add(jobId)),
+    []
+  );
   const closePanel = useCallback(() => setSelectedJob(null), []);
   const closeSaved = useCallback(() => setShowSaved(false), []);
+
+
+  // Jobs this seeker already applied to, so those buttons start as "Already applied".
+  useEffect(() => {
+    getAppliedJobIds().then((ids) => setAppliedIds((prev) => new Set([...prev, ...ids])));
+  }, []);
+
 
   // Jobs posted by recruiters (Supabase "jobs" table) show under LaunchPadAI.
   useEffect(() => {
@@ -229,6 +250,25 @@ export default function FindJobsPage() {
         onClose={closePanel}
         onApply={handleApply}
       />
+
+      <ApplyModal
+        jobId={applyingJob?.id ?? ""}
+        jobTitle={applyingJob?.title ?? ""}
+        isOpen={applyingJob !== null}
+        onClose={closeApply}
+        onAlreadyApplied={() => applyingJob && markApplied(applyingJob.id)}
+        onSubmitted={() => {
+          if (!applyingJob) return;
+          markApplied(applyingJob.id);
+          closeApply();
+          showToast({
+            kind: "success",
+            message: `Your application for ${applyingJob.title} was sent.`,
+            action: { label: "View in tracker", onClick: () => router.push("/dashboard/applications") },
+          });
+        }}
+      />
+
 
       <SavedJobsDrawer
         open={showSaved}
