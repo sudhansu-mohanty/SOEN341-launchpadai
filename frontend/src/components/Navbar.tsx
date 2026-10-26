@@ -9,13 +9,21 @@ import type { User } from "@supabase/supabase-js";
 const links = [
   { label: "Features", href: "#" },
   { label: "My Resumes", href: "/dashboard/resume" },
+  { label: "Find Jobs", href: "/find-jobs" },
   { label: "My Applications", href: "/dashboard/applications" },
 ];
+
+const hiddenForRecruiters = ["My Resumes", "Find Jobs"];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
+
+  const isRecruiter = user?.user_metadata?.role === "recruiter";
+  const visibleLinks = isRecruiter
+    ? links.filter((link) => !hiddenForRecruiters.includes(link.label))
+    : links;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -52,7 +60,7 @@ export default function Navbar() {
         </Link>
 
         <div className="hidden items-center gap-1 sm:flex">
-          {links.map((link) => (
+          {visibleLinks.map((link) => (
             <Link
               key={link.label}
               href={link.href}
@@ -61,6 +69,14 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
+          {isRecruiter && (
+            <Link
+              href="/recruiter"
+              className="rounded-md px-3 py-1.5 text-sm font-medium tracking-tight text-zinc-500 transition-colors hover:text-white"
+            >
+              My Postings
+            </Link>
+          )}
         </div>
 
         <div className="flex items-center gap-2">
@@ -72,6 +88,14 @@ export default function Navbar() {
               >
                 Dashboard
               </Link>
+
+              <Link
+                href="/profile"
+                className="rounded-md px-4 py-2 text-sm font-medium tracking-tight text-zinc-400 transition-colors hover:text-white"
+              >
+                My Profile
+              </Link>
+
               <button
                 onClick={async () => {
                   await supabase.auth.signOut();
