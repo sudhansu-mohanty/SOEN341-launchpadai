@@ -9,7 +9,7 @@ Helped plan sprint deliverables, break down requirements into manageable develop
 
 ## Key Contributions
 
-### Sprint Planning & Task Breakdown
+### Sprint Planning & Task Breakdown (with Sudhansu)
 - Participated in planning Sprint 2 deliverables and identifying the work required to implement features.
 - Broke down larger requirements into smaller development tasks.
 - Helped clarify feature scope, implementation steps and task dependencies.
