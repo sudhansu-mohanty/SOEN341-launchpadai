@@ -788,3 +788,10 @@
 
 **Prompt:**
 > gimme the command
+
+---
+
+**Date:** 2026-10-26
+
+**Prompt:**
+> can i just compare and have everthing from the current main branch in Sudhansu branch
