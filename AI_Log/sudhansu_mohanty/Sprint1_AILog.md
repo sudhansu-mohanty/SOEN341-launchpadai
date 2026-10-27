@@ -817,3 +817,133 @@
 
 **Prompt:**
 > yes go ahead
+
+---
+
+**Date:** 2026-10-26
+
+**Prompt:**
+> can you make me User story templates for this task? Role/Scope: Build the responsive job feed grid/list displaying active postings with metadata badges (title, company, location, salary range, and workplace type).
+> 
+> As a job seeker, I want to view and edit my profile information so that my personal and professional details stay accurate.
+> 
+> Tasks
+> Create profile page: Build the interface to display the user's profile information.
+> Implement profile editing: Allow users to edit their personal and professional details.
+> Save profile changes: Create a database, and connect the profile form to the database to save changes.
+> Validate profile inputs: Display errors for invalid information.
+> Enforce required fields: Prevent saving when required fields are empty.
+> Load saved profile data: Display saved information when the user reopens the page. in this format
+
+---
+
+**Date:** 2026-10-26
+
+**Prompt:**
+> Role/Scope: Create the search bar with 300ms debounce optimization and multi-filter controls (keyword, location dropdown, category selector, remote/hybrid pills).
+> 
+> for this
+
+---
+
+**Date:** 2026-10-26
+
+**Prompt:**
+> Role/Scope: Build the full-page/modal view displaying complete job requirements, company overview, closing countdown badge, and the primary "Apply Now" trigger.
+
+---
+
+**Date:** 2026-10-26
+
+**Prompt:**
+> I need to create acceptance tests for this, can you teach me what are acceptance tests
+
+---
+
+**Date:** 2026-10-26
+
+**Prompt:**
+> [User Story 2.08] Build Detailed Job Description View Modal | Sudhansu Mohanty
+>  #79
+> Open
+> Description
+> @sudhansu-mohanty
+> sudhansu-mohanty
+> opened 7m ago
+> Owner
+> As a job seeker, I want a prominent "Apply Now" button on the job detail view so that I can submit my application directly from the posting.
+> 
+> Tasks
+> Build Apply Now button: Add the primary CTA button to the job detail layout.
+> Guard against unauthenticated users: Redirect to login or show a prompt if the user is not signed
+> in.
+> Prevent duplicate applications: Disable the button and show "Already Applied" if the user has
+> previously applied.
+> Trigger application flow: On click, open the application form or redirect to the application
+> submission step
+> 
+> For this what would the tests be?
+
+---
+
+**Date:** 2026-10-26
+
+**Prompt:**
+> Can we make a smaller list
+
+---
+
+**Date:** 2026-10-26
+
+**Prompt:**
+> can we make it just a checklist for my issue description
+
+---
+
+**Date:** 2026-10-26
+
+**Prompt:**
+> can you do the same for the other 2 user stories
+
+---
+
+**Date:** 2026-10-26
+
+**Prompt:**
+> [User Story 2.06] Implement Multi-Filter Search Toolbar with Debouncing | Sudhansu Mohanty
+>  #77
+> Open
+> Description
+> @sudhansu-mohanty
+> sudhansu-mohanty
+> opened 21m ago
+> Owner
+> As a job seeker, I want the filter controls to reflect my current selections visually so that I always know which filters are active.
+> 
+> Tasks
+> Highlight active filter state: Style selected pills, dropdowns, and selectors to show active vs.
+> inactive state.
+> Persist filter state during session: Keep filters applied when navigating away and returning to
+> the feed.
+> Show result count: Display the number of matching postings as filters are applied.
+
+---
+
+**Date:** 2026-10-26
+
+**Prompt:**
+> [User Story 2.05] Build Job Catalog Feed Component | Sudhansu Mohanty
+>  #74
+> Open
+> Description
+> @sudhansu-mohanty
+> sudhansu-mohanty
+> opened 30m ago
+> Owner
+> As a job seeker, I want to browse a responsive grid or list of active job postings with key details so that I can quickly scan and identify relevant opportunities.
+> 
+> Tasks
+> Design metadata badge components: Build reusable badge UI for workplace type (Remote, Hybrid,
+> On-site) and salary range.
+> Render conditional badges: Show or hide salary/workplace badges gracefully when data is missing.
+> Style badge variants: Apply distinct colors or styles per workplace type for visual clarity.
