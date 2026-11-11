@@ -13,7 +13,7 @@ const links = [
   { label: "My Applications", href: "/dashboard/applications" },
 ];
 
-const hiddenForRecruiters = ["My Resumes", "Find Jobs"];
+const hiddenForRecruiters = ["My Resumes", "Find Jobs", "My Applications"];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
