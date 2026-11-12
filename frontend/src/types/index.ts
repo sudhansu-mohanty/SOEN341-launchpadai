@@ -43,7 +43,7 @@ import type { ApplicationStatus } from "@/lib/applications";
 
 export type { ApplicationStatus };
 
-// Row in the applications table (database/applications.sql)
+// Row in the applications table (supabase/migrations/applications.sql)
 export type Application = {
   id: string;
   job_id: string;
@@ -62,4 +62,21 @@ export type Application = {
   status: ApplicationStatus;
   created_at: string;
   updated_at: string;
+};
+
+export type NotificationType =
+  | "application_update"
+  | "interview_invitation"
+  | "deadline_reminder"
+  | "new_application";
+
+// Row in the notifications table (supabase/migrations/notifications.sql)
+export type AppNotification = {
+  id: string;
+  type: NotificationType;
+  title: string;
+  body: string;
+  link: string;
+  read_at: string | null;
+  created_at: string;
 };
