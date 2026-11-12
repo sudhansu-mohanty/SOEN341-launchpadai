@@ -81,6 +81,7 @@ export default function ResumeUploader({ onResult, onError, onScored }: Props) {
     setStatus("uploading");
     setErrorMessage("");
 
+    // Best-effort: upload to Supabase storage
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
@@ -90,7 +91,20 @@ export default function ResumeUploader({ onResult, onError, onScored }: Props) {
       // Upload is best-effort here; scoring can proceed without it
     }
 
-    router.push("/score");
+    // Score the resume via backend
+    try {
+      const form = new FormData();
+      form.append("file", file);
+
+      const res = await fetch(API_URL, { method: "POST", body: form });
+      if (!res.ok) throw new Error(`Server error: ${res.status}`);
+
+      const result = await res.json();
+      setData(result);
+      router.push("/score");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Scoring failed. Please try again.");
+    }
   };
 
   return (
