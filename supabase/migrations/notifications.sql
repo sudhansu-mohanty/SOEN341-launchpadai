@@ -1,7 +1,4 @@
 -- In-app notifications and reminders.
--- Run in the Supabase SQL editor. Safe to run more than once.
--- Depends on: jobs, applications and saved_jobs. Run applications.sql first.
-
 CREATE TABLE IF NOT EXISTS public.notifications (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
