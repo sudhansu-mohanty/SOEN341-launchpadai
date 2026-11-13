@@ -45,6 +45,48 @@ export default function ApplicationsPage() {
 
   const visible = tab === "All" ? applications : applications.filter((a) => a.status === tab);
 
+    // Applications submitted per day over the last 30 days
+  const chartData = (() => {
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+
+    const days = Array.from({ length: 30 }, (_, i) => {
+      const date = new Date();
+      date.setDate(date.getDate() - (29 - i));
+      date.setHours(0, 0, 0, 0);
+
+      return {
+        date,
+        count: 0,
+      };
+    });
+
+    applications.forEach((app) => {
+      const applicationDate = new Date(app.created_at);
+      applicationDate.setHours(0, 0, 0, 0);
+
+      const day = days.find(
+        (d) => d.date.getTime() === applicationDate.getTime()
+      );
+
+      if (day) {
+        day.count++;
+      }
+    });
+
+    return days;
+  })();
+
+  const maxApplications = Math.max(
+    ...chartData.map((d) => d.count),
+    1
+  );
+
+  const totalApplications = chartData.reduce(
+    (sum, day) => sum + day.count,
+    0
+  );
+
   return (
     <main className="relative min-h-screen bg-black text-white">
       <Navbar />
