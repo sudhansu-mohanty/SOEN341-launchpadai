@@ -45,7 +45,7 @@ export default function ApplicationsPage() {
 
   const visible = tab === "All" ? applications : applications.filter((a) => a.status === tab);
 
-    // Applications submitted per day over the last 30 days
+    // applications over  last 30 days
   const chartData = (() => {
     const today = new Date();
     today.setHours(23, 59, 59, 999);
@@ -96,6 +96,84 @@ export default function ApplicationsPage() {
         <p className="mt-2 text-sm tracking-tight text-zinc-500">
           Track the status of every job you have applied to.
         </p>
+
+        {/* applications over time graph */}
+<div className="mt-8 rounded-xl border border-white/[0.08] bg-white/[0.02] p-5">
+
+  <div className="flex items-center justify-between">
+    <div>
+      <h2 className="text-lg font-semibold text-white">
+        Applications Over Time
+      </h2>
+      <p className="mt-1 text-xs text-zinc-500">
+        Your application activity over the last 30 days
+      </p>
+    </div>
+
+    <div className="text-right">
+      <p className="text-2xl font-bold text-white">
+        {totalApplications}
+      </p>
+      <p className="text-xs text-zinc-500">
+        Applications
+      </p>
+    </div>
+  </div>
+
+  {/* Bar Chart */}
+  <div className="mt-8 flex h-40 items-end gap-1">
+    {chartData.map((day, index) => {
+      const height =
+        day.count === 0
+          ? 4
+          : Math.max((day.count / maxApplications) * 100, 8);
+
+      return (
+        <div
+          key={index}
+          className="group relative flex h-full flex-1 flex-col justify-end"
+        >
+          {/* Tooltip */}
+          <div className="absolute bottom-full left-1/2 z-10 mb-2 hidden -translate-x-1/2 whitespace-nowrap rounded-md border border-white/10 bg-zinc-900 px-2 py-1 text-xs text-white group-hover:block">
+            {day.count} applications
+            <br />
+            {day.date.toLocaleDateString()}
+          </div>
+
+          {/* Bar */}
+          <div
+            style={{ height: `${height}%` }}
+            className={`w-full rounded-t-sm transition-all ${
+              day.count > 0
+                ? "bg-sky-500 hover:bg-sky-400"
+                : "bg-white/[0.08]"
+            }`}
+          />
+        </div>
+      );
+    })}
+  </div>
+
+  {/* Chart Labels */}
+  <div className="mt-3 flex justify-between text-xs text-zinc-600">
+    <span>
+      {chartData[0]?.date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      })}
+    </span>
+
+    <span>
+      {chartData[14]?.date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      })}
+    </span>
+
+    <span>Today</span>
+  </div>
+
+</div>
 
         {loading && (
           <div className="mt-12 text-center">
