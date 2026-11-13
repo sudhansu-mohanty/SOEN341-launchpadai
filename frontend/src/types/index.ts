@@ -39,10 +39,27 @@ export type Job = {
   apply_url?: string; // external jobs apply on the original site
 };
 
+import type { ApplicationStatus } from "@/lib/applications";
+
+export type { ApplicationStatus };
+
+// Row in the applications table (database/applications.sql)
 export type Application = {
   id: string;
   job_id: string;
-  applicant_id: string;
-  status: "pending" | "reviewed" | "accepted" | "rejected";
+  seeker_id: string;
+  resume_path: string;
+  cover_letter_path?: string | null;
+  first_name?: string | null;
+  last_name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  degree?: string | null;
+  country?: string | null;
+  authorized_to_work_ca?: boolean | null;
+  requires_sponsorship?: boolean | null;
+  skills?: string[] | null;
+  status: ApplicationStatus;
   created_at: string;
+  updated_at: string;
 };

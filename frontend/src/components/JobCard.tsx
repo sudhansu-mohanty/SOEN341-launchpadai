@@ -1,4 +1,4 @@
-import { Building2, CalendarClock, DollarSign, MapPin } from "lucide-react";
+import { Bookmark, Building2, CalendarClock, DollarSign, MapPin } from "lucide-react";
 import type { Job } from "@/types";
 import { SOURCE_LABELS, WORKPLACE_LABELS, formatSalary, getDeadlineStatus, truncate } from "@/lib/jobs";
 
@@ -6,11 +6,21 @@ type JobCardProps = {
   job: Job;
   applied: boolean;
   selected: boolean;
+  saved?: boolean;
   onSelect: (job: Job) => void;
   onApply: (job: Job) => void;
+  onToggleSave?: (job: Job) => void;
 };
 
-export default function JobCard({ job, applied, selected, onSelect, onApply }: JobCardProps) {
+export default function JobCard({
+  job,
+  applied,
+  selected,
+  saved = false,
+  onSelect,
+  onApply,
+  onToggleSave,
+}: JobCardProps) {
   const deadline = getDeadlineStatus(job.deadline);
 
   return (
@@ -49,6 +59,20 @@ export default function JobCard({ job, applied, selected, onSelect, onApply }: J
           <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-xs font-medium tracking-tight text-zinc-300">
             {WORKPLACE_LABELS[job.workplace_type]}
           </span>
+          {onToggleSave && (
+            <button
+              type="button"
+              aria-label={saved ? "Remove from saved jobs" : "Save job"}
+              aria-pressed={saved}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleSave(job);
+              }}
+              className="rounded-full p-1.5 text-zinc-400 transition-colors hover:bg-white/10 hover:text-white"
+            >
+              <Bookmark className={`h-4 w-4 ${saved ? "fill-white text-white" : ""}`} />
+            </button>
+          )}
         </div>
       </div>
 
