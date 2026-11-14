@@ -69,6 +69,7 @@ export default function ScoreCard({ result }: Props) {
   const rafRef = useRef<number>(0);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDisplayScore(0);
     setBarsReady(false);
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { useScore } from "@/context/ScoreContext";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 import Navbar from "@/components/Navbar";
@@ -565,12 +566,12 @@ export default function ScorePage() {
             <p className="mt-2 text-sm tracking-tight text-zinc-500">
               Upload a resume first to see your score.
             </p>
-            <a
+            <Link
               href="/"
               className="mt-6 inline-block rounded-lg bg-white px-6 py-3 text-sm font-bold tracking-tight text-black transition-all hover:-translate-y-0.5 hover:bg-zinc-200 hover:shadow-xl hover:shadow-white/20"
             >
               Go back
-            </a>
+            </Link>
           </div>
         </div>
       </main>
@@ -617,12 +618,12 @@ export default function ScorePage() {
         </div>
 
         <div className="mt-8 text-center">
-          <a
+          <Link
             href="/"
             className="text-sm tracking-tight text-zinc-500 transition-colors hover:text-white"
           >
             &larr; Upload another resume
-          </a>
+          </Link>
         </div>
 
         <div className="mt-6">

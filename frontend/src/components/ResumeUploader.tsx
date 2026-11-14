@@ -3,7 +3,7 @@
 import { ChangeEvent, DragEvent, FormEvent, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ScoreResult } from "./ScoreCard";
-import { useScore, ScoreData } from "@/context/ScoreContext";
+import { useScore } from "@/context/ScoreContext";
 import { supabase } from "@/lib/supabase";
 import { uploadResume } from "@/lib/storage";
 
@@ -18,7 +18,7 @@ const API_URL = `${API_BASE}/resume/extract`;
 
 type Status = "idle" | "dragging" | "uploading" | "error";
 
-export default function ResumeUploader({ onResult, onError, onScored }: Props) {
+export default function ResumeUploader({ onError }: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState("");
