@@ -45,6 +45,16 @@ export default function ApplicationsPage() {
 
   const visible = tab === "All" ? applications : applications.filter((a) => a.status === tab);
 
+// interview conversion rate
+const interviewApplications = applications.filter(
+  (app) => app.status === "Interview" || app.status === "Offered"
+).length;
+
+const interviewConversionRate =
+  applications.length > 0
+    ? (interviewApplications / applications.length) * 100
+    : 0;
+  
     // applications over  last 30 days
   const chartData = (() => {
     const today = new Date();
