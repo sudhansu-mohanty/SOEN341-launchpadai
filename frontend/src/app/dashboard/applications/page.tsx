@@ -45,6 +45,16 @@ export default function ApplicationsPage() {
 
   const visible = tab === "All" ? applications : applications.filter((a) => a.status === tab);
 
+// interview conversion rate
+const interviewApplications = applications.filter(
+  (app) => app.status === "Interview" || app.status === "Offered"
+).length;
+
+const interviewConversionRate =
+  applications.length > 0
+    ? (interviewApplications / applications.length) * 100
+    : 0;
+  
     // applications over  last 30 days
   const chartData = (() => {
     const today = new Date();
@@ -172,6 +182,50 @@ export default function ApplicationsPage() {
 
     <span>Today</span>
   </div>
+
+  
+{/* Interview Conversion Rate */}
+<div className="mt-4 rounded-xl border border-white/[0.08] bg-white/[0.02] p-5">
+  <div className="flex items-center justify-between">
+    <div>
+      <h2 className="text-lg font-semibold text-white">
+        Interview Conversion Rate
+      </h2>
+      <p className="mt-1 text-xs text-zinc-500">
+        Percentage of applications that resulted in interviews
+      </p>
+    </div>
+
+    <div className="text-right">
+      <p className="text-3xl font-bold text-sky-400">
+        {interviewConversionRate.toFixed(1)}%
+      </p>
+      <p className="text-xs text-zinc-500">
+        Conversion rate
+      </p>
+    </div>
+  </div>
+
+  {/* Progress bar */}
+  <div className="mt-5 h-2 w-full overflow-hidden rounded-full bg-white/10">
+    <div
+      className="h-full rounded-full bg-sky-500 transition-all duration-500"
+      style={{
+        width: `${interviewConversionRate}%`,
+      }}
+    />
+  </div>
+
+  <div className="mt-3 flex justify-between text-xs text-zinc-500">
+    <span>
+      {interviewApplications} interviews
+    </span>
+    <span>
+      {applications.length} total applications
+    </span>
+  </div>
+</div>
+
 
 </div>
 
