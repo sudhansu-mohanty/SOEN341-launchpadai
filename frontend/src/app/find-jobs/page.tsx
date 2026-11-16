@@ -141,6 +141,7 @@ export default function FindJobsPage() {
     if (filters.source === "launchpad") return;
 
     let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setExternalLoading(true);
 
     const timeout = setTimeout(async () => {

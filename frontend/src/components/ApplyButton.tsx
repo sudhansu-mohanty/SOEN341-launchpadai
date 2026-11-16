@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ApplyModal from "./ApplyModal";
 import { useToast } from "@/context/ToastContext";
 import type { ApplyApi } from "@/lib/applications";
@@ -18,10 +18,9 @@ type Props = {
 //                onViewTracker={() => router.push("/dashboard/applications")} />
 export default function ApplyButton({ jobId, jobTitle, alreadyApplied = false, onViewTracker, api }: Props) {
   const [open, setOpen] = useState(false);
-  const [applied, setApplied] = useState(alreadyApplied);
+  const [appliedLocally, setAppliedLocally] = useState(false);
+  const applied = alreadyApplied || appliedLocally;
   const { showToast } = useToast();
-
-  useEffect(() => setApplied(alreadyApplied), [alreadyApplied]);
 
   if (applied) {
     return (
@@ -59,10 +58,10 @@ export default function ApplyButton({ jobId, jobTitle, alreadyApplied = false, o
         isOpen={open}
         api={api}
         onClose={() => setOpen(false)}
-        onAlreadyApplied={() => setApplied(true)}
+        onAlreadyApplied={() => setAppliedLocally(true)}
         onSubmitted={() => {
           setOpen(false);
-          setApplied(true);
+          setAppliedLocally(true);
           showToast({
             kind: "success",
             message: `Your application for ${jobTitle} was sent.`,

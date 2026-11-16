@@ -159,6 +159,7 @@ export default function ApplyModal({
   useEffect(() => {
     if (!isOpen) return;
     let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setStep("form");
     setError(null);
     setApplicant(EMPTY_APPLICANT);
