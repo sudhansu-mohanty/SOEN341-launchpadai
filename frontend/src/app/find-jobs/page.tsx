@@ -26,6 +26,9 @@ type DbJob = {
   created_at: string;
   deadline: string | null;
 };
+const isDbJob = (j: Job) => j.source === "launchpad" && /^[0-9a-f]{8}-[0-9a-f]{4}-/i.test(j.id);
+
+type LiveState = { archived: boolean; closed: boolean; deadline?: string };
 
 export default function FindJobsPage() {
   const router = useRouter();
@@ -68,6 +71,7 @@ export default function FindJobsPage() {
         .from("jobs")
         .select("*")
         .eq("status", "open")
+        .is("archived_at", null)
         .order("created_at", { ascending: false });
       if (error || !data) {
         console.error("Could not load posted jobs:", error?.message);
@@ -110,6 +114,36 @@ export default function FindJobsPage() {
   }, []);
 
   const savedIds = useMemo(() => new Set(savedJobs.map((j) => j.id)), [savedJobs]);
+    const [liveState, setLiveState] = useState<Record<string, LiveState>>({});
+
+  useEffect(() => {
+    const ids = savedJobs.filter(isDbJob).map((j) => j.id);
+    if (ids.length === 0) return;
+    let cancelled = false;
+    supabase
+      .from("jobs")
+      .select("id, status, archived_at, deadline")
+      .in("id", ids)
+      .then(({ data, error }) => {
+        if (cancelled || error || !data) return;
+        const rows = data as { id: string; status: string; archived_at: string | null; deadline: string | null }[];
+        const next: Record<string, LiveState> = {};
+        const found = new Set(rows.map((r) => r.id));
+        for (const id of ids) if (!found.has(id)) next[id] = { archived: true, closed: false };
+        for (const r of rows) next[r.id] = { archived: !!r.archived_at, closed: r.status === "closed", deadline: r.deadline ?? undefined };
+        setLiveState((prev) => ({ ...prev, ...next }));
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [savedJobs]);
+
+  const visibleSavedJobs = savedJobs
+    .filter((j) => !liveState[j.id]?.archived)
+    .map((j) => (isDbJob(j) && liveState[j.id] ? { ...j, deadline: liveState[j.id].deadline } : j));
+  const closedIds = new Set(
+    visibleSavedJobs.filter((j) => liveState[j.id]?.closed).map((j) => j.id)
+  );
 
   async function toggleSave(job: Job) {
     setSaveError("");
@@ -192,7 +226,7 @@ export default function FindJobsPage() {
             className="flex shrink-0 items-center gap-2 rounded-md border border-white/10 px-4 py-2 text-sm font-medium text-zinc-300 transition-colors hover:bg-white/5 hover:text-white"
           >
             <Bookmark className="h-4 w-4" />
-            Saved jobs ({savedJobs.length})
+              Saved jobs ({visibleSavedJobs.length})
           </button>
         </div>
 
@@ -273,7 +307,8 @@ export default function FindJobsPage() {
 
       <SavedJobsDrawer
         open={showSaved}
-        jobs={savedJobs}
+        jobs={visibleSavedJobs}
+        closedIds={closedIds}
         appliedIds={appliedIds}
         onClose={closeSaved}
         onApply={handleApply}

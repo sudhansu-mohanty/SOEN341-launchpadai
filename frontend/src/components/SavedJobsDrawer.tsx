@@ -9,6 +9,7 @@ type SavedJobsDrawerProps = {
   open: boolean;
   jobs: Job[];
   appliedIds: Set<string>;
+  closedIds?: Set<string>;
   onClose: () => void;
   onApply: (job: Job) => void;
   onRemove: (job: Job) => void;
@@ -18,6 +19,7 @@ export default function SavedJobsDrawer({
   open,
   jobs,
   appliedIds,
+  closedIds,
   onClose,
   onApply,
   onRemove,
@@ -70,6 +72,7 @@ export default function SavedJobsDrawer({
             jobs.map((job) => {
               const applied = appliedIds.has(job.id);
               const deadline = getDeadlineStatus(job.deadline);
+              const closed = deadline.closed || !!closedIds?.has(job.id);
               return (
                 <div key={job.id} className="rounded-xl border border-white/[0.08] bg-black p-4">
                   <h3 className="font-semibold tracking-tight">{job.title}</h3>
@@ -89,7 +92,7 @@ export default function SavedJobsDrawer({
                   <div className="mt-3 flex items-center gap-2">
                     <button
                       type="button"
-                      disabled={applied || deadline.closed}
+                      disabled={applied || closed}
                       onClick={() => {
                         if (job.source === "external" && job.apply_url) {
                           window.open(job.apply_url, "_blank", "noopener,noreferrer");
@@ -99,7 +102,7 @@ export default function SavedJobsDrawer({
                       }}
                       className="rounded-full bg-white px-4 py-1.5 text-xs font-semibold whitespace-nowrap text-black hover:bg-zinc-200 disabled:cursor-default disabled:bg-white/10 disabled:text-zinc-400"
                     >
-                      {applied ? "Applied" : deadline.closed ? "Closed" : "Apply Now"}
+                      {applied ? "Applied" : closed ? "Closed" : "Apply Now"}
                     </button>
                     <button
                       type="button"
