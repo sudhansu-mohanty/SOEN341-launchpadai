@@ -15,6 +15,7 @@ type JobRow = {
   description: string | null;
   deadline: string | null;
   status: "open" | "closed";
+  archived_at: string | null;
   created_at: string;
   applications: { count: number }[];
 };
@@ -94,12 +95,19 @@ export default function RecruiterDashboardPage() {
   const [saving, setSaving] = useState(false);
 
   const router = useRouter();
+    const [tab, setTab] = useState<"active" | "closed" | "archived">("active");
+
+  const activeJobs = jobs.filter((j) => !j.archived_at && j.status === "open");
+  const closedJobs = jobs.filter((j) => !j.archived_at && j.status === "closed");
+  const archivedJobs = jobs.filter((j) => !!j.archived_at);
+  const visibleJobs =
+    tab === "active" ? activeJobs : tab === "closed" ? closedJobs : archivedJobs;
 
   const loadJobs = useCallback(async (uid: string) => {
     const { data, error } = await supabase
       .from("jobs")
       .select(
-        "id, title, company, location, workplace_type, description, deadline, status, created_at, applications(count)"
+         "id, title, company, location, workplace_type, description, deadline, status, archived_at, created_at, applications(count)"
       )
       .eq("posted_by", uid)
       .order("created_at", { ascending: false });
@@ -244,7 +252,24 @@ export default function RecruiterDashboardPage() {
     }
     await loadJobs(userId);
   }
-
+   async function setArchived(job: JobRow, archive: boolean) {
+    if (!userId) return;
+    setError("");
+    const { data, error } = await supabase
+      .from("jobs")
+      .update({ archived_at: archive ? new Date().toISOString() : null })
+      .eq("id", job.id)
+      .select("id");
+    if (error) {
+      setError(error.message);
+      return;
+    }
+    if (!data || data.length === 0) {
+      setError("Update was blocked (no permission to change this job).");
+      return;
+    }
+    await loadJobs(userId);
+  }
   async function openApplicants(job: JobRow) {
     setSelectedJob(job);
     setApplicants([]);
@@ -352,7 +377,27 @@ export default function RecruiterDashboardPage() {
             Create posting
           </button>
         </div>
- 
+                <div className="mt-8 flex gap-2">
+          {(
+            [
+              ["active", "Active", activeJobs.length],
+              ["closed", "Closed", closedJobs.length],
+              ["archived", "Archived", archivedJobs.length],
+            ] as const
+          ).map(([key, label, count]) => (
+            <button
+              key={key}
+              onClick={() => setTab(key)}
+              className={`rounded-md border px-3 py-1.5 text-sm font-medium transition-colors ${
+                tab === key
+                  ? "border-white/30 bg-white/10 text-white"
+                  : "border-white/10 text-zinc-400 hover:bg-white/5 hover:text-white"
+              }`}
+            >
+              {label} ({count})
+            </button>
+          ))}
+        </div>
         <div className="mt-8 rounded-2xl border border-white/[0.08] p-1">
           <div className="overflow-x-auto rounded-xl border border-white/5 bg-black">
             {loading ? (
@@ -372,11 +417,14 @@ export default function RecruiterDashboardPage() {
                       <th className="p-4 font-medium">Posted</th>
                       <th className="p-4 font-medium">Status</th>
                       <th className="p-4 font-medium">Applicants</th>
+                                            {tab === "archived" && (
+                        <th className="p-4 font-medium">Archived on</th>
+                      )}
                       <th className="p-4 font-medium"></th>
                     </tr>
                   </thead>
                   <tbody>
-                    {jobs.map((job) => (
+                    {visibleJobs.map((job) => (
                       <tr key={job.id} className="border-t border-white/5">
                         <td className="p-4">{job.title}</td>
                         <td className="p-4 text-zinc-400">{job.location ?? "-"}</td>
@@ -395,6 +443,13 @@ export default function RecruiterDashboardPage() {
                           </span>
                         </td>
                         <td className="p-4">{job.applications?.[0]?.count ?? 0}</td>
+                                                {tab === "archived" && (
+                          <td className="p-4 text-zinc-400">
+                            {job.archived_at
+                              ? new Date(job.archived_at).toLocaleDateString()
+                              : "-"}
+                          </td>
+                        )}
                         <td className="p-4 text-right">
                           <div className="flex justify-end gap-2">
                             <button
@@ -415,12 +470,21 @@ export default function RecruiterDashboardPage() {
                             >
                               {job.status === "open" ? "Close" : "Reopen"}
                             </button>
+                              <button
+                              onClick={() => setArchived(job, !job.archived_at)}
+                              className="rounded-md border border-white/10 px-3 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/5 hover:text-white"
+                            >
+                              {job.archived_at ? "Restore" : "Archive"}
+                            </button>
                           </div>
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
+                                {visibleJobs.length === 0 && (
+                  <p className="p-8 text-zinc-500">No {tab} postings.</p>
+                )}
               </>
             )}
           </div>
