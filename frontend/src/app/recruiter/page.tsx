@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { supabase } from "@/lib/supabase";
 import { statusLabel, badgeClass } from "@/lib/applicationStatus";
+import { validatePosting, todayString, type PostingErrors } from "@/lib/postingValidation";
+import { postingTab } from "@/lib/postingVisibility";
 
 type JobRow = {
   id: string;
@@ -92,14 +94,15 @@ export default function RecruiterDashboardPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [formError, setFormError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<PostingErrors>({});
   const [saving, setSaving] = useState(false);
 
   const router = useRouter();
     const [tab, setTab] = useState<"active" | "closed" | "archived">("active");
 
-  const activeJobs = jobs.filter((j) => !j.archived_at && j.status === "open");
-  const closedJobs = jobs.filter((j) => !j.archived_at && j.status === "closed");
-  const archivedJobs = jobs.filter((j) => !!j.archived_at);
+  const activeJobs = jobs.filter((j) => postingTab(j) === "active");
+  const closedJobs = jobs.filter((j) => postingTab(j) === "closed");
+  const archivedJobs = jobs.filter((j) => postingTab(j) === "archived");
   const visibleJobs =
     tab === "active" ? activeJobs : tab === "closed" ? closedJobs : archivedJobs;
 
@@ -151,12 +154,14 @@ export default function RecruiterDashboardPage() {
 
   function updateField(field: keyof typeof emptyForm, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
+    setFieldErrors((prev) => ({ ...prev, [field]: undefined }));
   }
 
   function openCreate() {
     setEditingId(null);
     setForm(emptyForm);
     setFormError("");
+    setFieldErrors({});
     setShowCreate(true);
   }
 
@@ -171,22 +176,16 @@ export default function RecruiterDashboardPage() {
       deadline: job.deadline ? new Date(job.deadline).toLocaleDateString("en-CA") : "",
     });
     setFormError("");
+    setFieldErrors({});
     setShowCreate(true);
   }
 
   async function saveJob() {
     setFormError("");
 
-    const missing: string[] = [];
-    if (!form.title.trim()) missing.push("title");
-    if (!form.company.trim()) missing.push("company");
-    if (!form.location.trim()) missing.push("location");
-    if (!form.workplace_type) missing.push("job type");
-    if (!form.description.trim()) missing.push("description");
-    if (missing.length > 0) {
-      setFormError(`Please fill in: ${missing.join(", ")}.`);
-      return;
-    }
+  const errors = validatePosting(form);
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) return;
     if (!userId) return;
 
     const values = {
@@ -235,6 +234,7 @@ export default function RecruiterDashboardPage() {
 
   async function toggleStatus(job: JobRow) {
     if (!userId) return;
+    if (job.status === "open" && !window.confirm("Close this posting? Job seekers will no longer be able to apply to it.")) return;
     setError("");
     const next = job.status === "open" ? "closed" : "open";
     const { data, error } = await supabase
@@ -254,6 +254,7 @@ export default function RecruiterDashboardPage() {
   }
    async function setArchived(job: JobRow, archive: boolean) {
     if (!userId) return;
+    if (archive && !window.confirm("Archive this posting? It will be hidden from job seekers. You can restore it later, and the applicant history is kept.")) return;
     setError("");
     const { data, error } = await supabase
       .from("jobs")
@@ -522,6 +523,7 @@ export default function RecruiterDashboardPage() {
                   onChange={(e) => updateField("title", e.target.value)}
                   placeholder="e.g. TEST Frontend Developer"
                 />
+                {fieldErrors.title && <p className="mt-1 text-xs text-red-400">{fieldErrors.title}</p>}
               </div>
               <div>
                 <label className="mb-1 block text-xs text-zinc-400">Company *</label>
@@ -530,6 +532,7 @@ export default function RecruiterDashboardPage() {
                   value={form.company}
                   onChange={(e) => updateField("company", e.target.value)}
                 />
+                {fieldErrors.company && <p className="mt-1 text-xs text-red-400">{fieldErrors.company}</p>}
               </div>
               <div>
                 <label className="mb-1 block text-xs text-zinc-400">Location *</label>
@@ -539,6 +542,7 @@ export default function RecruiterDashboardPage() {
                   onChange={(e) => updateField("location", e.target.value)}
                   placeholder="e.g. Montreal, QC"
                 />
+                {fieldErrors.location && <p className="mt-1 text-xs text-red-400">{fieldErrors.location}</p>}
               </div>
               <div>
                 <label className="mb-1 block text-xs text-zinc-400">Job type *</label>
@@ -554,6 +558,7 @@ export default function RecruiterDashboardPage() {
                     </option>
                   ))}
                 </select>
+                {fieldErrors.workplace_type && <p className="mt-1 text-xs text-red-400">{fieldErrors.workplace_type}</p>}
               </div>
               <div>
                 <label className="mb-1 block text-xs text-zinc-400">Description *</label>
@@ -564,6 +569,7 @@ export default function RecruiterDashboardPage() {
                   onChange={(e) => updateField("description", e.target.value)}
                   placeholder="Responsibilities, requirements..."
                 />
+                {fieldErrors.description && <p className="mt-1 text-xs text-red-400">{fieldErrors.description}</p>}
               </div>
               <div>
                 <label className="mb-1 block text-xs text-zinc-400">
@@ -571,10 +577,12 @@ export default function RecruiterDashboardPage() {
                 </label>
                 <input
                   type="date"
+                  min={todayString()}
                   className={inputClass}
                   value={form.deadline}
                   onChange={(e) => updateField("deadline", e.target.value)}
                 />
+                {fieldErrors.deadline && <p className="mt-1 text-xs text-red-400">{fieldErrors.deadline}</p>}
               </div>
             </div>
  
