@@ -36,3 +36,14 @@ jobs:
       - name: Tests
         run: npm test
         working-directory: frontend
+
+      - name: Coverage
+        run: npx vitest run --coverage
+        working-directory: frontend
+
+      - name: Build
+        run: npm run build
+        working-directory: frontend
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}

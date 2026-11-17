@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { supabase } from "@/lib/supabase";
 import { statusLabel, badgeClass } from "@/lib/applicationStatus";
+import { validatePosting, todayString, type PostingErrors } from "@/lib/postingValidation";
+import { postingTab } from "@/lib/postingVisibility";
 
 type JobRow = {
   id: string;
@@ -15,6 +17,7 @@ type JobRow = {
   description: string | null;
   deadline: string | null;
   status: "open" | "closed";
+  archived_at: string | null;
   created_at: string;
   applications: { count: number }[];
 };
@@ -91,15 +94,23 @@ export default function RecruiterDashboardPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [formError, setFormError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<PostingErrors>({});
   const [saving, setSaving] = useState(false);
 
   const router = useRouter();
+    const [tab, setTab] = useState<"active" | "closed" | "archived">("active");
+
+  const activeJobs = jobs.filter((j) => postingTab(j) === "active");
+  const closedJobs = jobs.filter((j) => postingTab(j) === "closed");
+  const archivedJobs = jobs.filter((j) => postingTab(j) === "archived");
+  const visibleJobs =
+    tab === "active" ? activeJobs : tab === "closed" ? closedJobs : archivedJobs;
 
   const loadJobs = useCallback(async (uid: string) => {
     const { data, error } = await supabase
       .from("jobs")
       .select(
-        "id, title, company, location, workplace_type, description, deadline, status, created_at, applications(count)"
+         "id, title, company, location, workplace_type, description, deadline, status, archived_at, created_at, applications(count)"
       )
       .eq("posted_by", uid)
       .order("created_at", { ascending: false });
@@ -143,12 +154,14 @@ export default function RecruiterDashboardPage() {
 
   function updateField(field: keyof typeof emptyForm, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
+    setFieldErrors((prev) => ({ ...prev, [field]: undefined }));
   }
 
   function openCreate() {
     setEditingId(null);
     setForm(emptyForm);
     setFormError("");
+    setFieldErrors({});
     setShowCreate(true);
   }
 
@@ -163,22 +176,16 @@ export default function RecruiterDashboardPage() {
       deadline: job.deadline ? new Date(job.deadline).toLocaleDateString("en-CA") : "",
     });
     setFormError("");
+    setFieldErrors({});
     setShowCreate(true);
   }
 
   async function saveJob() {
     setFormError("");
 
-    const missing: string[] = [];
-    if (!form.title.trim()) missing.push("title");
-    if (!form.company.trim()) missing.push("company");
-    if (!form.location.trim()) missing.push("location");
-    if (!form.workplace_type) missing.push("job type");
-    if (!form.description.trim()) missing.push("description");
-    if (missing.length > 0) {
-      setFormError(`Please fill in: ${missing.join(", ")}.`);
-      return;
-    }
+  const errors = validatePosting(form);
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) return;
     if (!userId) return;
 
     const values = {
@@ -227,6 +234,7 @@ export default function RecruiterDashboardPage() {
 
   async function toggleStatus(job: JobRow) {
     if (!userId) return;
+    if (job.status === "open" && !window.confirm("Close this posting? Job seekers will no longer be able to apply to it.")) return;
     setError("");
     const next = job.status === "open" ? "closed" : "open";
     const { data, error } = await supabase
@@ -244,7 +252,25 @@ export default function RecruiterDashboardPage() {
     }
     await loadJobs(userId);
   }
-
+   async function setArchived(job: JobRow, archive: boolean) {
+    if (!userId) return;
+    if (archive && !window.confirm("Archive this posting? It will be hidden from job seekers. You can restore it later, and the applicant history is kept.")) return;
+    setError("");
+    const { data, error } = await supabase
+      .from("jobs")
+      .update({ archived_at: archive ? new Date().toISOString() : null })
+      .eq("id", job.id)
+      .select("id");
+    if (error) {
+      setError(error.message);
+      return;
+    }
+    if (!data || data.length === 0) {
+      setError("Update was blocked (no permission to change this job).");
+      return;
+    }
+    await loadJobs(userId);
+  }
   async function openApplicants(job: JobRow) {
     setSelectedJob(job);
     setApplicants([]);
@@ -352,7 +378,27 @@ export default function RecruiterDashboardPage() {
             Create posting
           </button>
         </div>
- 
+                <div className="mt-8 flex gap-2">
+          {(
+            [
+              ["active", "Active", activeJobs.length],
+              ["closed", "Closed", closedJobs.length],
+              ["archived", "Archived", archivedJobs.length],
+            ] as const
+          ).map(([key, label, count]) => (
+            <button
+              key={key}
+              onClick={() => setTab(key)}
+              className={`rounded-md border px-3 py-1.5 text-sm font-medium transition-colors ${
+                tab === key
+                  ? "border-white/30 bg-white/10 text-white"
+                  : "border-white/10 text-zinc-400 hover:bg-white/5 hover:text-white"
+              }`}
+            >
+              {label} ({count})
+            </button>
+          ))}
+        </div>
         <div className="mt-8 rounded-2xl border border-white/[0.08] p-1">
           <div className="overflow-x-auto rounded-xl border border-white/5 bg-black">
             {loading ? (
@@ -372,11 +418,14 @@ export default function RecruiterDashboardPage() {
                       <th className="p-4 font-medium">Posted</th>
                       <th className="p-4 font-medium">Status</th>
                       <th className="p-4 font-medium">Applicants</th>
+                                            {tab === "archived" && (
+                        <th className="p-4 font-medium">Archived on</th>
+                      )}
                       <th className="p-4 font-medium"></th>
                     </tr>
                   </thead>
                   <tbody>
-                    {jobs.map((job) => (
+                    {visibleJobs.map((job) => (
                       <tr key={job.id} className="border-t border-white/5">
                         <td className="p-4">{job.title}</td>
                         <td className="p-4 text-zinc-400">{job.location ?? "-"}</td>
@@ -395,6 +444,13 @@ export default function RecruiterDashboardPage() {
                           </span>
                         </td>
                         <td className="p-4">{job.applications?.[0]?.count ?? 0}</td>
+                                                {tab === "archived" && (
+                          <td className="p-4 text-zinc-400">
+                            {job.archived_at
+                              ? new Date(job.archived_at).toLocaleDateString()
+                              : "-"}
+                          </td>
+                        )}
                         <td className="p-4 text-right">
                           <div className="flex justify-end gap-2">
                             <button
@@ -415,12 +471,21 @@ export default function RecruiterDashboardPage() {
                             >
                               {job.status === "open" ? "Close" : "Reopen"}
                             </button>
+                              <button
+                              onClick={() => setArchived(job, !job.archived_at)}
+                              className="rounded-md border border-white/10 px-3 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/5 hover:text-white"
+                            >
+                              {job.archived_at ? "Restore" : "Archive"}
+                            </button>
                           </div>
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
+                                {visibleJobs.length === 0 && (
+                  <p className="p-8 text-zinc-500">No {tab} postings.</p>
+                )}
               </>
             )}
           </div>
@@ -458,6 +523,7 @@ export default function RecruiterDashboardPage() {
                   onChange={(e) => updateField("title", e.target.value)}
                   placeholder="e.g. TEST Frontend Developer"
                 />
+                {fieldErrors.title && <p className="mt-1 text-xs text-red-400">{fieldErrors.title}</p>}
               </div>
               <div>
                 <label className="mb-1 block text-xs text-zinc-400">Company *</label>
@@ -466,6 +532,7 @@ export default function RecruiterDashboardPage() {
                   value={form.company}
                   onChange={(e) => updateField("company", e.target.value)}
                 />
+                {fieldErrors.company && <p className="mt-1 text-xs text-red-400">{fieldErrors.company}</p>}
               </div>
               <div>
                 <label className="mb-1 block text-xs text-zinc-400">Location *</label>
@@ -475,6 +542,7 @@ export default function RecruiterDashboardPage() {
                   onChange={(e) => updateField("location", e.target.value)}
                   placeholder="e.g. Montreal, QC"
                 />
+                {fieldErrors.location && <p className="mt-1 text-xs text-red-400">{fieldErrors.location}</p>}
               </div>
               <div>
                 <label className="mb-1 block text-xs text-zinc-400">Job type *</label>
@@ -490,6 +558,7 @@ export default function RecruiterDashboardPage() {
                     </option>
                   ))}
                 </select>
+                {fieldErrors.workplace_type && <p className="mt-1 text-xs text-red-400">{fieldErrors.workplace_type}</p>}
               </div>
               <div>
                 <label className="mb-1 block text-xs text-zinc-400">Description *</label>
@@ -500,6 +569,7 @@ export default function RecruiterDashboardPage() {
                   onChange={(e) => updateField("description", e.target.value)}
                   placeholder="Responsibilities, requirements..."
                 />
+                {fieldErrors.description && <p className="mt-1 text-xs text-red-400">{fieldErrors.description}</p>}
               </div>
               <div>
                 <label className="mb-1 block text-xs text-zinc-400">
@@ -507,10 +577,12 @@ export default function RecruiterDashboardPage() {
                 </label>
                 <input
                   type="date"
+                  min={todayString()}
                   className={inputClass}
                   value={form.deadline}
                   onChange={(e) => updateField("deadline", e.target.value)}
                 />
+                {fieldErrors.deadline && <p className="mt-1 text-xs text-red-400">{fieldErrors.deadline}</p>}
               </div>
             </div>
  

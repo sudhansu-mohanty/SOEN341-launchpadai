@@ -88,8 +88,8 @@ export default function JobCard({
             <DollarSign className="h-3.5 w-3.5" />
             {formatSalary(job.salary_min, job.salary_max)}
           </span>
-          <span>Posted {new Date(job.created_at).toLocaleDateString()}</span>
-          <span
+          <span suppressHydrationWarning>Posted {new Date(job.created_at).toLocaleDateString()}</span>
+          <span suppressHydrationWarning
             className={`flex items-center gap-1 ${
               deadline.closed ? "text-zinc-600" : deadline.urgent ? "text-amber-400" : ""
             }`}
