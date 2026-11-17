@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import { Building2, CalendarClock, Clock, DollarSign, MapPin, X } from "lucide-react";
+import { Building2, CalendarClock, Clock, DollarSign, MapPin, Users, X } from "lucide-react";
 import type { Job } from "@/types";
 import { SOURCE_LABELS, WORKPLACE_LABELS, formatSalary, getDeadlineStatus, getJobDetails } from "@/lib/jobs";
+import Link from "next/link";
 
 type JobDetailPanelProps = {
   job: Job | null;
@@ -132,7 +133,14 @@ export default function JobDetailPanel({ job, applied, onClose, onApply }: JobDe
               <Section title="Benefits" items={details.benefits} />
             </div>
 
-            <div className="border-t border-white/10 px-6 py-4">
+            <div className="flex gap-3 border-t border-white/10 px-6 py-4">
+              <Link
+                href={`/network?${new URLSearchParams({ company: job.company, title: job.title })}`}
+                className="flex items-center justify-center gap-2 rounded-full border border-white/15 px-5 py-2.5 text-sm font-semibold tracking-tight text-white transition-colors hover:bg-white/10"
+              >
+                <Users className="h-4 w-4" />
+                Network
+              </Link>
               <button
                 type="button"
                 disabled={applied || deadline.closed}
@@ -143,7 +151,7 @@ export default function JobDetailPanel({ job, applied, onClose, onApply }: JobDe
                   }
                   onApply(job);
                 }}
-                className="w-full rounded-full bg-white py-2.5 text-sm font-semibold tracking-tight text-black transition-colors hover:bg-zinc-200 disabled:cursor-default disabled:bg-white/10 disabled:text-zinc-400"
+                className="flex-1 rounded-full bg-white py-2.5 text-sm font-semibold tracking-tight text-black transition-colors hover:bg-zinc-200 disabled:cursor-default disabled:bg-white/10 disabled:text-zinc-400"
               >
                 {applied ? "Applied" : deadline.closed ? "Applications closed" : "Apply now"}
               </button>
