@@ -190,13 +190,21 @@ if (userRole === "recruiter") {
       return;
     }
 
-    if (
-      (form.portfolio_url && !/^https?:\/\/\S+$/i.test(form.portfolio_url)) ||
-      (form.linkedin_url && !/^https?:\/\/\S+$/i.test(form.linkedin_url))
-    ) {
-      setError("Portfolio and LinkedIn links must start with http:// or https://.");
-      return;
-    }
+    
+const urls =
+  role === "recruiter"
+    ? [form.company_website, form.linkedin_url]
+    : [form.portfolio_url, form.linkedin_url];
+
+if (
+  urls.some(
+    (url) => url.trim() && !/^https?:\/\/\S+$/i.test(url.trim())
+  )
+) {
+  setError("All links must start with http:// or https://.");
+  return;
+}
+
 
     
 setSaving(true);
