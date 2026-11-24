@@ -68,6 +68,7 @@ export default function ProfilePage() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [profileExists, setProfileExists] = useState(false);
+  const [role, setRole] = useState<"recruiter" | "job_seeker">("job_seeker");
 
   useEffect(() => {
     async function loadProfile() {
@@ -75,6 +76,12 @@ export default function ProfilePage() {
         await supabase.auth.getUser();
 
       const user = authData.user;
+      const userRole =
+  user?.user_metadata?.role === "recruiter"
+    ? "recruiter"
+    : "job_seeker";
+
+setRole(userRole);
 
       if (authError || !user) {
         router.replace("/login");
