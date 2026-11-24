@@ -198,40 +198,71 @@ if (userRole === "recruiter") {
       return;
     }
 
-    setSaving(true);
+    
+setSaving(true);
 
-    const { error: saveError } = await supabase
-      .from("profiles")
-      .upsert(
-        {
-          id: userId,
-          email,
-          full_name: form.full_name.trim(),
-          headline: form.headline.trim(),
-          location: form.location.trim(),
-          summary: form.summary.trim(),
-          skills: form.skills
-            .split(",")
-            .map((skill) => skill.trim())
-            .filter(Boolean),
-          education: form.education.trim(),
-          experience: form.experience.trim(),
-          portfolio_url: form.portfolio_url.trim(),
-          linkedin_url: form.linkedin_url.trim(),
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: "id" }
-      );
+if (role === "recruiter") {
+  const { error: saveError } = await supabase
+    .from("recruiter_profiles")
+    .upsert(
+      {
+        id: userId,
+        email,
+        full_name: form.full_name.trim(),
+        job_title: form.job_title.trim(),
+        company_name: form.company_name.trim(),
+        industry: form.industry.trim(),
+        company_website: form.company_website.trim(),
+        company_location: form.location.trim(),
+        company_size: form.company_size,
+        company_description: form.company_description.trim(),
+        linkedin_url: form.linkedin_url.trim(),
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "id" }
+    );
 
-    setSaving(false);
+  setSaving(false);
 
-    if (saveError) {
-      setError("Could not save your profile. " + saveError.message);
-      return;
-    }
+  if (saveError) {
+    setError("Could not save recruiter profile: " + saveError.message);
+    return;
+  }
+} else {
+  const { error: saveError } = await supabase
+    .from("profiles")
+    .upsert(
+      {
+        id: userId,
+        email,
+        full_name: form.full_name.trim(),
+        headline: form.headline.trim(),
+        location: form.location.trim(),
+        summary: form.summary.trim(),
+        skills: form.skills
+          .split(",")
+          .map((skill) => skill.trim())
+          .filter(Boolean),
+        education: form.education.trim(),
+        experience: form.experience.trim(),
+        portfolio_url: form.portfolio_url.trim(),
+        linkedin_url: form.linkedin_url.trim(),
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "id" }
+    );
 
-    setProfileExists(true);
-    setMessage("Your profile has been saved.");
+  setSaving(false);
+
+  if (saveError) {
+    setError("Could not save your profile: " + saveError.message);
+    return;
+  }
+}
+
+setProfileExists(true);
+setMessage("Your profile has been saved.");
+
   }
 
   return (
