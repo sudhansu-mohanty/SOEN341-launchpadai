@@ -91,42 +91,79 @@ setRole(userRole);
       setUserId(user.id);
       setEmail(user.email ?? "");
 
-      const { data, error: profileError } = await supabase
-        .from("profiles")
-        .select(
-          "full_name, headline, location, summary, skills, education, experience, portfolio_url, linkedin_url"
-        )
-        .eq("id", user.id)
-        .maybeSingle();
+      
+if (userRole === "recruiter") {
+  const { data, error: profileError } = await supabase
+    .from("recruiter_profiles")
+    .select(
+      "full_name, job_title, company_name, industry, company_website, company_size, company_description, company_location, linkedin_url"
+    )
+    .eq("id", user.id)
+    .maybeSingle();
 
-      if (profileError) {
-        setError(
-          "Could not load your profile. Check that the database table is configured."
-        );
-        setLoading(false);
-        return;
-      }
+  if (profileError) {
+    setError("Could not load recruiter profile: " + profileError.message);
+    setLoading(false);
+    return;
+  }
 
-      if (data) {
-        setProfileExists(true);
-        setForm({
-          full_name: data.full_name ?? "",
-          headline: data.headline ?? "",
-          location: data.location ?? "",
-          summary: data.summary ?? "",
-          skills: (data.skills ?? []).join(", "),
-          education: data.education ?? "",
-          experience: data.experience ?? "",
-          portfolio_url: data.portfolio_url ?? "",
-          linkedin_url: data.linkedin_url ?? "",
-        });
-      } else {
-        // Use the name collected during account registration.
-        setForm({
-          ...emptyForm,
-          full_name: user.user_metadata?.full_name ?? "",
-        });
-      }
+  if (data) {
+    setProfileExists(true);
+    setForm({
+      ...emptyForm,
+      full_name: data.full_name ?? "",
+      job_title: data.job_title ?? "",
+      company_name: data.company_name ?? "",
+      industry: data.industry ?? "",
+      company_website: data.company_website ?? "",
+      company_size: data.company_size ?? "",
+      company_description: data.company_description ?? "",
+      location: data.company_location ?? "",
+      linkedin_url: data.linkedin_url ?? "",
+    });
+  } else {
+    setForm({
+      ...emptyForm,
+      full_name: user.user_metadata?.full_name ?? "",
+    });
+  }
+} else {
+  const { data, error: profileError } = await supabase
+    .from("profiles")
+    .select(
+      "full_name, headline, location, summary, skills, education, experience, portfolio_url, linkedin_url"
+    )
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (profileError) {
+    setError("Could not load your profile. Check that the database table is configured.");
+    setLoading(false);
+    return;
+  }
+
+  if (data) {
+    setProfileExists(true);
+    setForm({
+      ...emptyForm,
+      full_name: data.full_name ?? "",
+      headline: data.headline ?? "",
+      location: data.location ?? "",
+      summary: data.summary ?? "",
+      skills: (data.skills ?? []).join(", "),
+      education: data.education ?? "",
+      experience: data.experience ?? "",
+      portfolio_url: data.portfolio_url ?? "",
+      linkedin_url: data.linkedin_url ?? "",
+    });
+  } else {
+    setForm({
+      ...emptyForm,
+      full_name: user.user_metadata?.full_name ?? "",
+    });
+  }
+}
+
 
       setLoading(false);
     }
