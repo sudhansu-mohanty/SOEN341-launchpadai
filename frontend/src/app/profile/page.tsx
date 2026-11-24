@@ -6,7 +6,9 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { supabase } from "@/lib/supabase";
 
+
 type ProfileForm = {
+  // job seeker fileds
   full_name: string;
   headline: string;
   location: string;
@@ -16,9 +18,20 @@ type ProfileForm = {
   experience: string;
   portfolio_url: string;
   linkedin_url: string;
+
+  // Recruiter fields
+  job_title: string;
+  company_name: string;
+  industry: string;
+  company_website: string;
+  company_size: string;
+  company_description: string;
 };
 
+
+
 const emptyForm: ProfileForm = {
+  // job seeker fields
   full_name: "",
   headline: "",
   location: "",
@@ -28,7 +41,16 @@ const emptyForm: ProfileForm = {
   experience: "",
   portfolio_url: "",
   linkedin_url: "",
+
+  // Recruiter fields
+  job_title: "",
+  company_name: "",
+  industry: "",
+  company_website: "",
+  company_size: "",
+  company_description: "",
 };
+
 
 const inputClass =
   "w-full rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white placeholder-zinc-600 outline-none focus:border-white/30";
