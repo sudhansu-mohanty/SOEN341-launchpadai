@@ -239,18 +239,23 @@ if (userRole === "recruiter") {
       <Navbar />
 
       <div className="mx-auto max-w-3xl px-5 pb-16 pt-24">
-        <div className="mb-8">
-          <p className="text-sm font-medium text-zinc-500">
-            JOB SEEKER
-          </p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight">
-            Professional profile
-          </h1>
-          <p className="mt-3 text-sm text-zinc-400">
-            Share your experience, education, and skills with potential
-            employers.
-          </p>
-        </div>
+        
+<div className="mb-8">
+  <p className="text-sm font-medium text-zinc-500">
+    {role === "recruiter" ? "RECRUITER" : "JOB SEEKER"}
+  </p>
+
+  <h1 className="mt-2 text-3xl font-bold tracking-tight">
+    {role === "recruiter" ? "Recruiter profile" : "Professional profile"}
+  </h1>
+
+  <p className="mt-3 text-sm text-zinc-400">
+    {role === "recruiter"
+      ? "Introduce yourself and your company to potential candidates."
+      : "Share your experience, education, and skills with potential employers."}
+  </p>
+</div>
+
 
         {loading ? (
           <p className="text-sm text-zinc-400">Loading your profile...</p>
@@ -307,6 +312,139 @@ if (userRole === "recruiter") {
                 className={inputClass}
               />
             </div>
+
+            
+{role === "recruiter" ? (
+  <>
+    <div>
+      <h2 className="text-lg font-semibold">Professional information</h2>
+    </div>
+
+    <div>
+      <label htmlFor="job_title" className={labelClass}>
+        Job title
+      </label>
+      <input
+        id="job_title"
+        value={form.job_title}
+        onChange={(e) => updateField("job_title", e.target.value)}
+        placeholder="Talent Acquisition Specialist"
+        className={inputClass}
+      />
+    </div>
+
+    <div>
+      <label htmlFor="linkedin_url" className={labelClass}>
+        LinkedIn URL
+      </label>
+      <input
+        id="linkedin_url"
+        type="url"
+        value={form.linkedin_url}
+        onChange={(e) => updateField("linkedin_url", e.target.value)}
+        placeholder="https://linkedin.com/in/username"
+        className={inputClass}
+      />
+    </div>
+
+    <div>
+      <h2 className="text-lg font-semibold">Company information</h2>
+    </div>
+
+    <div>
+      <label htmlFor="company_name" className={labelClass}>
+        Company name
+      </label>
+      <input
+        id="company_name"
+        value={form.company_name}
+        onChange={(e) => updateField("company_name", e.target.value)}
+        placeholder="ABC Technologies"
+        className={inputClass}
+      />
+    </div>
+
+    <div>
+      <label htmlFor="industry" className={labelClass}>
+        Industry
+      </label>
+      <input
+        id="industry"
+        value={form.industry}
+        onChange={(e) => updateField("industry", e.target.value)}
+        placeholder="Information Technology"
+        className={inputClass}
+      />
+    </div>
+
+    <div>
+      <label htmlFor="company_website" className={labelClass}>
+        Company website
+      </label>
+      <input
+        id="company_website"
+        type="url"
+        value={form.company_website}
+        onChange={(e) => updateField("company_website", e.target.value)}
+        placeholder="https://www.company.com"
+        className={inputClass}
+      />
+    </div>
+
+    <div>
+      <label htmlFor="location" className={labelClass}>
+        Company location
+      </label>
+      <input
+        id="location"
+        value={form.location}
+        onChange={(e) => updateField("location", e.target.value)}
+        placeholder="Montreal, Quebec"
+        className={inputClass}
+      />
+    </div>
+
+    <div>
+      <label htmlFor="company_size" className={labelClass}>
+        Company size
+      </label>
+      <select
+        id="company_size"
+        value={form.company_size}
+        onChange={(e) => updateField("company_size", e.target.value)}
+        className={inputClass}
+      >
+        <option value="">Select company size</option>
+        <option value="1-10">1-10 employees</option>
+        <option value="11-50">11-50 employees</option>
+        <option value="51-200">51-200 employees</option>
+        <option value="201-500">201-500 employees</option>
+        <option value="501-1000">501-1000 employees</option>
+        <option value="1000+">1000+ employees</option>
+      </select>
+    </div>
+
+    <div>
+      <label htmlFor="company_description" className={labelClass}>
+        Company description
+      </label>
+      <textarea
+        id="company_description"
+        rows={5}
+        maxLength={2000}
+        value={form.company_description}
+        onChange={(e) => updateField("company_description", e.target.value)}
+        placeholder="Tell candidates about your company."
+        className={inputClass}
+      />
+    </div>
+  </>
+) : (
+  <>
+    {/* Keep all original job seeker fields here */}
+  </>
+)}
+
 
             <div>
               <label htmlFor="location" className={labelClass}>
