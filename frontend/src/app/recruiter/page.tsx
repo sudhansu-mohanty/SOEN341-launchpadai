@@ -617,12 +617,16 @@ export default function RecruiterDashboardPage() {
       )}
  
       {selectedJob && (
-        <div
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 px-5"
-          onClick={() => setSelectedJob(null)}
-        >
+        <div className="fixed inset-0 z-[60] flex items-center justify-center px-5">
+          <button
+            type="button"
+            aria-label="Close applicants"
+            tabIndex={-1}
+            className="absolute inset-0 cursor-default bg-black/70"
+            onClick={() => setSelectedJob(null)}
+          />
           <div
-            className="max-h-[80vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-white/10 bg-zinc-950 p-6"
+            className="relative max-h-[80vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-white/10 bg-zinc-950 p-6"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-4">
