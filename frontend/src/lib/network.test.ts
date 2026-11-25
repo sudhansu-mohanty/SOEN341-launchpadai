@@ -122,6 +122,28 @@ describe("cleanTitle", () => {
   });
 
   // An empty title must not crash
+  it("removes several parts in parentheses", () => {
+    expect(cleanTitle("Data Analyst (Contract) (Remote)")).toBe("Data Analyst");
+  });
+
+  it("keeps an opening bracket that is never closed", () => {
+    expect(cleanTitle("Data Analyst (Contract")).toBe("Data Analyst (Contract");
+  });
+
+  it("does not remove brackets that are split across lines", () => {
+    expect(cleanTitle("Data (Analyst\nRemote)")).toBe("Data (Analyst Remote)");
+  });
+
+  it("removes a lowercase level and a single digit level", () => {
+    expect(cleanTitle("Software Developer ii")).toBe("Software Developer");
+    expect(cleanTitle("Software Developer 2")).toBe("Software Developer");
+  });
+
+  it("keeps a last word that only looks like a level", () => {
+    expect(cleanTitle("Software Developer VI")).toBe("Software Developer VI");
+    expect(cleanTitle("Software Developer 12")).toBe("Software Developer 12");
+  });
+
   it("returns an empty string for an empty title", () => {
     expect(cleanTitle("")).toBe("");
   });
