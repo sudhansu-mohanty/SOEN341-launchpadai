@@ -480,7 +480,7 @@ setMessage("Your profile has been saved.");
   </>
 ) : (
   <>
-    {<div>
+    <div>
               <label htmlFor="location" className={labelClass}>
                 Location
               </label>
@@ -596,7 +596,7 @@ setMessage("Your profile has been saved.");
 
   }
   </>
-)}
+)
             {error && (
               <p role="alert" className="rounded-lg bg-red-500/10 p-3 text-sm text-red-300">
                 {error}
