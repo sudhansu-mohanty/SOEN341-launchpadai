@@ -28,16 +28,22 @@ export default function ApplicationsPage() {
   const router = useRouter();
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) {
-        router.push("/login");
-        return;
-      }
-      listMyApplications(data.user.id)
-        .then(setApplications)
-        .catch((err) => setError(err.message))
-        .finally(() => setLoading(false));
-    });
+    supabase.auth
+      .getUser()
+      .then(({ data }) => {
+        if (!data.user) {
+          router.push("/login");
+          return;
+        }
+        listMyApplications(data.user.id)
+          .then(setApplications)
+          .catch((err) => setError(err.message))
+          .finally(() => setLoading(false));
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
   }, [router]);
 
   const countFor = (t: Tab) =>
