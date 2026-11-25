@@ -48,11 +48,36 @@ export function fallbackSearchUrl(company: string, title: string): string {
 }
 
 
+// Removes every "(...)" from the text, like "(Full Time)", in a single pass so long
+// titles can't make it slow. Like the old regex, a "(...)" can't span a line break.
+function removeParentheses(text: string): string {
+  let out = "";
+  let i = 0;
+  while (i < text.length) {
+    const open = text.indexOf("(", i);
+    const close = open === -1 ? -1 : text.indexOf(")", open + 1);
+    if (close === -1) {
+      out += text.slice(i);
+      break;
+    }
+    const lineBreak = text.slice(open + 1, close).search(/[\n\r\u2028\u2029]/);
+    if (lineBreak !== -1) {
+      // No match can cross the line break, so keep everything up to it
+      const end = open + 1 + lineBreak;
+      out += text.slice(i, end);
+      i = end;
+      continue;
+    }
+    out += text.slice(i, open);
+    i = close + 1;
+  }
+  return out;
+}
+
 // Turn the job title to something clean and simple for searching
 // ex.: "Software Developer I (Full Time) - Canada" -> "Software Developer"
 export function cleanTitle(title: string): string {
-  return title
-    .replace(/\(.*?\)/g, "")            // drop "(Full Time)"
+  return removeParentheses(title)       // drop "(Full Time)"
     .replace(/\s[-–—|].*$/, "")         // drop " - Canada"
     .replace(/\s+/g, " ")
     .trim()
