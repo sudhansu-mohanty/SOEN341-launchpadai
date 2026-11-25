@@ -12,12 +12,22 @@ export type NetworkResult = {
 // Making sure the link is a profile url
 const LINKEDIN_PROFILE = /^https:\/\/([a-z]{2,3}\.)?linkedin\.com\/in\/[^/?#]+/i;
 
-// if its LinkedIn profile, splits into name, headline and url 
+// Removes a trailing " | LinkedIn" from a search result title (any case, any spacing).
+// Done step by step instead of with a regex so long titles can't make it slow.
+function stripLinkedInSuffix(title: string): string {
+  const trimmed = title.trimEnd();
+  if (trimmed.slice(-8).toLowerCase() !== "linkedin") return title;
+  const beforeWord = trimmed.slice(0, -8).trimEnd();
+  if (!beforeWord.endsWith("|")) return title;
+  return beforeWord.slice(0, -1).trimEnd();
+}
+
+// if its LinkedIn profile, splits into name, headline and url
 // ex: "Jane Doe - Talent Acquisition - Company name"
 // null of the result is not a profile
 export function parseContact(raw: RawResult, category: NetworkContact["category"]): NetworkContact | null {
   if (!raw.link || !LINKEDIN_PROFILE.test(raw.link)) return null;
-  const parts = (raw.title ?? "").replace(/\s*\|\s*LinkedIn\s*$/i, "").split(" - ").map((s) => s.trim()).filter(Boolean);
+  const parts = stripLinkedInSuffix(raw.title ?? "").split(" - ").map((s) => s.trim()).filter(Boolean);
   if (!parts[0]) return null;
   return { name: parts[0], headline: parts.slice(1).join(" · "), url: raw.link, category };
 }
