@@ -60,7 +60,9 @@ export default function FindJobsPage() {
 
   // Jobs this seeker already applied to, so those buttons start as "Already applied".
   useEffect(() => {
-    getAppliedJobIds().then((ids) => setAppliedIds((prev) => new Set([...prev, ...ids])));
+    getAppliedJobIds()
+      .then((ids) => setAppliedIds((prev) => new Set([...prev, ...ids])))
+      .catch((err) => console.error("Could not load applied jobs:", err));
   }, []);
 
 
