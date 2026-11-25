@@ -64,7 +64,10 @@ export default function HeroSection() {
       animateTo(INITIAL);
     }, 600);
 
-    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    supabase.auth
+      .getUser()
+      .then(({ data }) => setUser(data.user))
+      .catch(() => setUser(null));
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);

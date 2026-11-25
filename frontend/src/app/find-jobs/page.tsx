@@ -60,7 +60,9 @@ export default function FindJobsPage() {
 
   // Jobs this seeker already applied to, so those buttons start as "Already applied".
   useEffect(() => {
-    getAppliedJobIds().then((ids) => setAppliedIds((prev) => new Set([...prev, ...ids])));
+    getAppliedJobIds()
+      .then((ids) => setAppliedIds((prev) => new Set([...prev, ...ids])))
+      .catch((err) => console.error("Could not load applied jobs:", err));
   }, []);
 
 
@@ -92,7 +94,7 @@ export default function FindJobsPage() {
         }))
       );
     }
-    loadPostedJobs();
+    loadPostedJobs().catch((err) => console.error("Could not load posted jobs:", err));
   }, []);
 
   // Saved jobs (Supabase "saved_jobs" table) for the logged-in job seeker.
@@ -110,7 +112,7 @@ export default function FindJobsPage() {
       }
       setSavedJobs((data as { job: Job }[]).map((row) => row.job));
     }
-    loadSavedJobs();
+    loadSavedJobs().catch((err) => console.error("Could not load saved jobs:", err));
   }, []);
 
   const savedIds = useMemo(() => new Set(savedJobs.map((j) => j.id)), [savedJobs]);

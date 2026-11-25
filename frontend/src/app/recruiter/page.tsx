@@ -138,7 +138,10 @@ export default function RecruiterDashboardPage() {
       setUserId(user.id);
       await loadJobs(user.id);
     }
-    init();
+    init().catch((err) => {
+      setError(err instanceof Error ? err.message : "Could not load your postings.");
+      setLoading(false);
+    });
   }, [router, loadJobs]);
 
   useEffect(() => {
@@ -516,8 +519,9 @@ export default function RecruiterDashboardPage() {
  
             <div className="mt-6 space-y-4">
               <div>
-                <label className="mb-1 block text-xs text-zinc-400">Title *</label>
+                <label htmlFor="posting-title" className="mb-1 block text-xs text-zinc-400">Title *</label>
                 <input
+                  id="posting-title"
                   className={inputClass}
                   value={form.title}
                   onChange={(e) => updateField("title", e.target.value)}
@@ -526,8 +530,9 @@ export default function RecruiterDashboardPage() {
                 {fieldErrors.title && <p className="mt-1 text-xs text-red-400">{fieldErrors.title}</p>}
               </div>
               <div>
-                <label className="mb-1 block text-xs text-zinc-400">Company *</label>
+                <label htmlFor="posting-company" className="mb-1 block text-xs text-zinc-400">Company *</label>
                 <input
+                  id="posting-company"
                   className={inputClass}
                   value={form.company}
                   onChange={(e) => updateField("company", e.target.value)}
@@ -535,8 +540,9 @@ export default function RecruiterDashboardPage() {
                 {fieldErrors.company && <p className="mt-1 text-xs text-red-400">{fieldErrors.company}</p>}
               </div>
               <div>
-                <label className="mb-1 block text-xs text-zinc-400">Location *</label>
+                <label htmlFor="posting-location" className="mb-1 block text-xs text-zinc-400">Location *</label>
                 <input
+                  id="posting-location"
                   className={inputClass}
                   value={form.location}
                   onChange={(e) => updateField("location", e.target.value)}
@@ -545,8 +551,9 @@ export default function RecruiterDashboardPage() {
                 {fieldErrors.location && <p className="mt-1 text-xs text-red-400">{fieldErrors.location}</p>}
               </div>
               <div>
-                <label className="mb-1 block text-xs text-zinc-400">Job type *</label>
+                <label htmlFor="posting-workplace-type" className="mb-1 block text-xs text-zinc-400">Job type *</label>
                 <select
+                  id="posting-workplace-type"
                   className={inputClass}
                   value={form.workplace_type}
                   onChange={(e) => updateField("workplace_type", e.target.value)}
@@ -561,8 +568,9 @@ export default function RecruiterDashboardPage() {
                 {fieldErrors.workplace_type && <p className="mt-1 text-xs text-red-400">{fieldErrors.workplace_type}</p>}
               </div>
               <div>
-                <label className="mb-1 block text-xs text-zinc-400">Description *</label>
+                <label htmlFor="posting-description" className="mb-1 block text-xs text-zinc-400">Description *</label>
                 <textarea
+                  id="posting-description"
                   className={inputClass}
                   rows={5}
                   value={form.description}
@@ -572,10 +580,11 @@ export default function RecruiterDashboardPage() {
                 {fieldErrors.description && <p className="mt-1 text-xs text-red-400">{fieldErrors.description}</p>}
               </div>
               <div>
-                <label className="mb-1 block text-xs text-zinc-400">
+                <label htmlFor="posting-deadline" className="mb-1 block text-xs text-zinc-400">
                   Application deadline (optional)
                 </label>
                 <input
+                  id="posting-deadline"
                   type="date"
                   min={todayString()}
                   className={inputClass}
@@ -608,13 +617,16 @@ export default function RecruiterDashboardPage() {
       )}
  
       {selectedJob && (
-        <div
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 px-5"
-          onClick={() => setSelectedJob(null)}
-        >
+        <div className="fixed inset-0 z-[60] flex items-center justify-center px-5">
+          <button
+            type="button"
+            aria-label="Close applicants"
+            tabIndex={-1}
+            className="absolute inset-0 cursor-default bg-black/70"
+            onClick={() => setSelectedJob(null)}
+          />
           <div
-            className="max-h-[80vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-white/10 bg-zinc-950 p-6"
-            onClick={(e) => e.stopPropagation()}
+            className="relative max-h-[80vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-white/10 bg-zinc-950 p-6"
           >
             <div className="flex items-start justify-between gap-4">
               <div>

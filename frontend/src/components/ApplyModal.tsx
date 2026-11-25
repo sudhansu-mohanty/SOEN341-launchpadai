@@ -244,7 +244,9 @@ export default function ApplyModal({
   }
 
   function addSkill() {
-    const value = skillDraft.trim().replace(/,+$/, "").trim().slice(0, 40);
+    let value = skillDraft.trim();
+    while (value.endsWith(",")) value = value.slice(0, -1);
+    value = value.trim().slice(0, 40);
     setSkillDraft("");
     if (!value) return;
     setSkills((prev) =>
@@ -344,19 +346,23 @@ export default function ApplyModal({
   }
 
   return (
-    <div
-      className="fixed inset-0 z-[90] flex items-center justify-center bg-black/70 px-5 py-8 backdrop-blur-sm motion-safe:animate-[fade-in_0.2s_ease-out]"
-      onMouseDown={(e) => {
-        if (e.target === e.currentTarget && !submitting) onClose();
-      }}
-    >
+    <div className="fixed inset-0 z-[90] flex items-center justify-center px-5 py-8 motion-safe:animate-[fade-in_0.2s_ease-out]">
+      <button
+        type="button"
+        aria-label="Close"
+        tabIndex={-1}
+        className="absolute inset-0 cursor-default bg-black/70 backdrop-blur-sm"
+        onClick={() => {
+          if (!submitting) onClose();
+        }}
+      />
       <div
         ref={dialogRef}
         tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="max-h-full w-full max-w-lg overflow-y-auto rounded-2xl outline-none border border-white/[0.08] p-1 motion-safe:animate-[fade-up_0.35s_var(--ease-out)]"
+        className="relative max-h-full w-full max-w-lg overflow-y-auto rounded-2xl outline-none border border-white/[0.08] p-1 motion-safe:animate-[fade-up_0.35s_var(--ease-out)]"
       >
         <div className="rounded-xl border border-white/5 bg-black p-6 sm:p-8">
           <div className="flex items-start justify-between gap-4">

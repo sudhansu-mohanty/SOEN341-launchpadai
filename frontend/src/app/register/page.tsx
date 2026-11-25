@@ -72,10 +72,10 @@ export default function RegisterPage() {
                 </p>
 
                 <form onSubmit={onSubmit} className="mt-8 grid gap-5">
-                  <div>
-                    <label className="mb-2 block text-sm font-medium tracking-tight text-zinc-400">
+                  <fieldset className="min-w-0">
+                    <legend className="mb-2 block text-sm font-medium tracking-tight text-zinc-400">
                       I&apos;m a
-                    </label>
+                    </legend>
                     <div className="flex rounded-lg border border-white/10 p-1">
                       <button
                         type="button"
@@ -100,7 +100,7 @@ export default function RegisterPage() {
                         Recruiter
                       </button>
                     </div>
-                  </div>
+                  </fieldset>
 
                   <div>
                     <label

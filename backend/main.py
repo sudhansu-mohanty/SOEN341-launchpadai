@@ -36,9 +36,53 @@ def extract_text(pdf_bytes: bytes) -> str:
     return "\n".join(pages).strip()
 
 
+_ASCII_LETTERS = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+_EMAIL_LOCAL_CHARS = _ASCII_LETTERS | set("0123456789._%+-")
+_EMAIL_DOMAIN_CHARS = _ASCII_LETTERS | set("0123456789.-")
+
+
 def extract_email(text: str) -> str | None:
-    match = re.search(r"[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}", text)
-    return match.group(0) if match else None
+    """Returns the first email address in the text, like name@domain.com.
+
+    Done by walking through the text instead of using a regex, so a long resume
+    can't make it slow. Finds the same email the old regex
+    [a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,} found.
+    """
+    at = text.find("@")
+    while at != -1:
+        start = _skip_back(text, at, _EMAIL_LOCAL_CHARS)
+        if start < at:
+            stop = _email_end(text, at)
+            if stop is not None:
+                return text[start:stop]
+        at = text.find("@", at + 1)
+    return None
+
+
+def _skip_back(text: str, index: int, allowed: set[str]) -> int:
+    """Moves left from index while the characters are allowed; returns where it stopped."""
+    while index > 0 and text[index - 1] in allowed:
+        index -= 1
+    return index
+
+
+def _skip_forward(text: str, index: int, allowed: set[str]) -> int:
+    """Moves right from index while the characters are allowed; returns where it stopped."""
+    while index < len(text) and text[index] in allowed:
+        index += 1
+    return index
+
+
+def _email_end(text: str, at: int) -> int | None:
+    """Where the email ending at the domain after this @ stops, or None if there is no domain.
+
+    Uses the last dot in the domain that has text before it and 2+ letters after it.
+    """
+    domain_end = _skip_forward(text, at + 1, _EMAIL_DOMAIN_CHARS)
+    for dot in range(domain_end - 1, at + 1, -1):
+        if text[dot] == "." and _skip_forward(text, dot + 1, _ASCII_LETTERS) >= dot + 3:
+            return _skip_forward(text, dot + 1, _ASCII_LETTERS)
+    return None
 
 
 def extract_phone(text: str) -> str | None:

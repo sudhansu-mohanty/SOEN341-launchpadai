@@ -12,12 +12,22 @@ export type NetworkResult = {
 // Making sure the link is a profile url
 const LINKEDIN_PROFILE = /^https:\/\/([a-z]{2,3}\.)?linkedin\.com\/in\/[^/?#]+/i;
 
-// if its LinkedIn profile, splits into name, headline and url 
+// Removes a trailing " | LinkedIn" from a search result title (any case, any spacing).
+// Done step by step instead of with a regex so long titles can't make it slow.
+function stripLinkedInSuffix(title: string): string {
+  const trimmed = title.trimEnd();
+  if (trimmed.slice(-8).toLowerCase() !== "linkedin") return title;
+  const beforeWord = trimmed.slice(0, -8).trimEnd();
+  if (!beforeWord.endsWith("|")) return title;
+  return beforeWord.slice(0, -1).trimEnd();
+}
+
+// if its LinkedIn profile, splits into name, headline and url
 // ex: "Jane Doe - Talent Acquisition - Company name"
 // null of the result is not a profile
 export function parseContact(raw: RawResult, category: NetworkContact["category"]): NetworkContact | null {
   if (!raw.link || !LINKEDIN_PROFILE.test(raw.link)) return null;
-  const parts = (raw.title ?? "").replace(/\s*\|\s*LinkedIn\s*$/i, "").split(" - ").map((s) => s.trim()).filter(Boolean);
+  const parts = stripLinkedInSuffix(raw.title ?? "").split(" - ").map((s) => s.trim()).filter(Boolean);
   if (!parts[0]) return null;
   return { name: parts[0], headline: parts.slice(1).join(" · "), url: raw.link, category };
 }
@@ -38,16 +48,54 @@ export function fallbackSearchUrl(company: string, title: string): string {
 }
 
 
+// Removes every "(...)" from the text, like "(Full Time)", in a single pass so long
+// titles can't make it slow. Like the old regex, a "(...)" can't span a line break.
+function removeParentheses(text: string): string {
+  let out = "";
+  let i = 0;
+  while (i < text.length) {
+    const open = text.indexOf("(", i);
+    const close = open === -1 ? -1 : text.indexOf(")", open + 1);
+    if (close === -1) {
+      out += text.slice(i);
+      break;
+    }
+    const lineBreak = text.slice(open + 1, close).search(/[\n\r\u2028\u2029]/);
+    if (lineBreak !== -1) {
+      // No match can cross the line break, so keep everything up to it
+      const end = open + 1 + lineBreak;
+      out += text.slice(i, end);
+      i = end;
+      continue;
+    }
+    out += text.slice(i, open);
+    i = close + 1;
+  }
+  return out;
+}
+
 // Turn the job title to something clean and simple for searching
 // ex.: "Software Developer I (Full Time) - Canada" -> "Software Developer"
 export function cleanTitle(title: string): string {
-  return title
-    .replace(/\(.*?\)/g, "")            // drop "(Full Time)"
+  const cleaned = removeParentheses(title) // drop "(Full Time)"
     .replace(/\s[-–—|].*$/, "")         // drop " - Canada"
     .replace(/\s+/g, " ")
-    .trim()
-    .replace(/\s+(I{1,3}|IV|V|\d)$/i, "") // drop trailing level: I, II, III
     .trim();
+  return removeTrailingLevel(cleaned).trim(); // drop trailing level: I, II, III
+}
+
+const LEVELS = new Set(["I", "II", "III", "IV", "V"]);
+
+// Drops a last word like "II" or "3" from text whose words are separated by single spaces.
+// Checks only the last word instead of using a regex, so long titles can't make it slow.
+function removeTrailingLevel(text: string): string {
+  const lastSpace = text.lastIndexOf(" ");
+  if (lastSpace === -1) return text;
+  const word = text.slice(lastSpace + 1);
+  const isDigit = word.length === 1 && word >= "0" && word <= "9";
+  // Only uppercases plain i and v, so letters from other alphabets aren't mistaken for levels
+  const upper = word.replace(/[iv]/g, (c) => c.toUpperCase());
+  return LEVELS.has(upper) || isDigit ? text.slice(0, lastSpace) : text;
 }
 
 

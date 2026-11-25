@@ -119,7 +119,9 @@ export const DEFAULT_FILTERS: JobFilters = {
 };
 
 export function getLocations(jobs: Job[]): string[] {
-  return Array.from(new Set(jobs.map((job) => job.location))).sort();
+  return Array.from(new Set(jobs.map((job) => job.location))).sort((a, b) =>
+    a.localeCompare(b)
+  );
 }
 
 export function filterJobs(jobs: Job[], filters: JobFilters): Job[] {

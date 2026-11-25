@@ -25,22 +25,22 @@ export default function JobCard({
 
   return (
     <article
-      role="button"
-      tabIndex={0}
-      onClick={() => onSelect(job)}
-      onKeyDown={(e) => {
-        if (e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) {
-          e.preventDefault();
-          onSelect(job);
-        }
-      }}
-      className={`cursor-pointer rounded-xl border px-5 py-4 transition-colors hover:border-white/15 hover:bg-white/[0.04] ${
+      className={`relative cursor-pointer rounded-xl border px-5 py-4 transition-colors hover:border-white/15 hover:bg-white/[0.04] ${
         selected ? "border-white/25 bg-white/[0.05]" : "border-white/[0.08] bg-white/[0.02]"
       }`}
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h3 className="text-base font-semibold tracking-tight text-white">{job.title}</h3>
+          <h3 className="text-base font-semibold tracking-tight text-white">
+            {/* The title button covers the whole card, so clicking anywhere opens the job */}
+            <button
+              type="button"
+              onClick={() => onSelect(job)}
+              className="text-left outline-none after:absolute after:inset-0 after:rounded-xl focus-visible:after:ring-2 focus-visible:after:ring-white/40"
+            >
+              {job.title}
+            </button>
+          </h3>
           <p className="mt-0.5 flex items-center gap-1.5 text-sm tracking-tight text-zinc-400">
             <Building2 className="h-3.5 w-3.5" />
             {job.company}
@@ -68,7 +68,7 @@ export default function JobCard({
                 e.stopPropagation();
                 onToggleSave(job);
               }}
-              className="rounded-full p-1.5 text-zinc-400 transition-colors hover:bg-white/10 hover:text-white"
+              className="relative z-10 rounded-full p-1.5 text-zinc-400 transition-colors hover:bg-white/10 hover:text-white"
             >
               <Bookmark className={`h-4 w-4 ${saved ? "fill-white text-white" : ""}`} />
             </button>
@@ -109,7 +109,7 @@ export default function JobCard({
             }
             onApply(job);
           }}
-          className="rounded-full bg-white px-4 py-1.5 text-xs font-semibold tracking-tight text-black transition-colors hover:bg-zinc-200 disabled:cursor-default disabled:bg-white/10 disabled:text-zinc-400"
+          className="relative z-10 rounded-full bg-white px-4 py-1.5 text-xs font-semibold tracking-tight text-black transition-colors hover:bg-zinc-200 disabled:cursor-default disabled:bg-white/10 disabled:text-zinc-400"
         >
           {applied ? "Applied" : deadline.closed ? "Closed" : "Apply now"}
         </button>

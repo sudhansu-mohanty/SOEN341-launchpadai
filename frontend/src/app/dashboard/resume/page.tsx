@@ -18,16 +18,19 @@ export default function ResumeUploadPage() {
 const replaceInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) {
-        router.push("/login");
-        return;
-      }
-      setUserId(data.user.id);
-      listResumes(data.user.id)
-        .then(setResumes)
-        .catch((err) => setError(err.message));
-    });
+    supabase.auth
+      .getUser()
+      .then(({ data }) => {
+        if (!data.user) {
+          router.push("/login");
+          return;
+        }
+        setUserId(data.user.id);
+        listResumes(data.user.id)
+          .then(setResumes)
+          .catch((err) => setError(err.message));
+      })
+      .catch((err) => setError(err.message));
   }, [router]);
 
   const addFile = async (file: File) => {
@@ -107,7 +110,7 @@ const replaceInputRef = useRef<HTMLInputElement | null>(null);
 
   const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) addFile(file);
+    if (file) void addFile(file);
     if (inputRef.current) inputRef.current.value = "";
   };
 
@@ -125,7 +128,7 @@ const replaceInputRef = useRef<HTMLInputElement | null>(null);
     e.preventDefault();
     setDragging(false);
     const file = e.dataTransfer.files?.[0];
-    if (file) addFile(file);
+    if (file) void addFile(file);
   };
 
   const formatSize = (bytes: number) => {

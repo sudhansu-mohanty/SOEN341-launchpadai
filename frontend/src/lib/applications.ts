@@ -42,13 +42,23 @@ export const EMPTY_APPLICANT: ApplicantForm = {
 
 export type ApplicantErrors = Partial<Record<keyof ApplicantForm, string>>;
 
+// Checks for something@domain.tld without a regex, so long input can't make it slow:
+// one @, no spaces, text before the @, and a dot with text on both sides after it.
+export function isValidEmail(email: string): boolean {
+  if (/\s/.test(email)) return false;
+  const at = email.indexOf("@");
+  if (at <= 0 || at !== email.lastIndexOf("@")) return false;
+  const domain = email.slice(at + 1);
+  return domain.slice(1, -1).includes(".");
+}
+
 export function validateApplicant(a: ApplicantForm): ApplicantErrors {
   const errors: ApplicantErrors = {};
   if (!a.first_name.trim()) errors.first_name = "Enter your first name.";
   if (!a.last_name.trim()) errors.last_name = "Enter your last name.";
 
   if (!a.email.trim()) errors.email = "Enter your email address.";
-  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(a.email.trim())) errors.email = "Enter a valid email address.";
+  else if (!isValidEmail(a.email.trim())) errors.email = "Enter a valid email address.";
 
   const digits = a.phone.replace(/\D/g, "");
   if (!a.phone.trim()) errors.phone = "Enter your phone number.";
