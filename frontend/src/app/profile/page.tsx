@@ -593,9 +593,9 @@ setMessage("Your profile has been saved.");
               />
             </div>
 
-  }
+  
   </>
-)
+)}
             {error && (
               <p role="alert" className="rounded-lg bg-red-500/10 p-3 text-sm text-red-300">
                 {error}
