@@ -18,16 +18,19 @@ export default function ResumeUploadPage() {
 const replaceInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) {
-        router.push("/login");
-        return;
-      }
-      setUserId(data.user.id);
-      listResumes(data.user.id)
-        .then(setResumes)
-        .catch((err) => setError(err.message));
-    });
+    supabase.auth
+      .getUser()
+      .then(({ data }) => {
+        if (!data.user) {
+          router.push("/login");
+          return;
+        }
+        setUserId(data.user.id);
+        listResumes(data.user.id)
+          .then(setResumes)
+          .catch((err) => setError(err.message));
+      })
+      .catch((err) => setError(err.message));
   }, [router]);
 
   const addFile = async (file: File) => {
