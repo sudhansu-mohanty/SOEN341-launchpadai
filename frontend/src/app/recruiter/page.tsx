@@ -580,10 +580,11 @@ export default function RecruiterDashboardPage() {
                 {fieldErrors.description && <p className="mt-1 text-xs text-red-400">{fieldErrors.description}</p>}
               </div>
               <div>
-                <label className="mb-1 block text-xs text-zinc-400">
+                <label htmlFor="posting-deadline" className="mb-1 block text-xs text-zinc-400">
                   Application deadline (optional)
                 </label>
                 <input
+                  id="posting-deadline"
                   type="date"
                   min={todayString()}
                   className={inputClass}
