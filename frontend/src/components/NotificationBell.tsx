@@ -48,7 +48,7 @@ export default function NotificationBell({ userId }: { userId: string }) {
         if (active) setLoading(false);
       }
     }
-    load();
+    void load();
 
     const unsubscribe = subscribeToNotifications(userId, (notification) => {
       setNotifications((list) =>
