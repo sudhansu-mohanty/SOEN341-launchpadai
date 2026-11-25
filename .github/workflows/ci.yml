@@ -41,13 +41,13 @@ jobs:
 
       - name: Coverage
         run: |
-          npx vitest run --coverage --coverage.reporter=text --coverage.reporter=lcov
+          npm test -- --coverage --coverage.reporter=text --coverage.reporter=lcov
           # Sonar runs from the repo root, so point the report at frontend/
           sed -i 's|^SF:|SF:frontend/|' coverage/lcov.info
         working-directory: frontend
 
       - name: SonarQube Cloud scan
-        uses: SonarSource/sonarqube-scan-action@v8
+        uses: SonarSource/sonarqube-scan-action@70bad232163b09d998ea0707ee80c0ec80798c16 # v8.5.1
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
