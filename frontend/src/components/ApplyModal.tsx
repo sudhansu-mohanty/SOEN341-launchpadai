@@ -244,7 +244,9 @@ export default function ApplyModal({
   }
 
   function addSkill() {
-    const value = skillDraft.trim().replace(/,+$/, "").trim().slice(0, 40);
+    let value = skillDraft.trim();
+    while (value.endsWith(",")) value = value.slice(0, -1);
+    value = value.trim().slice(0, 40);
     setSkillDraft("");
     if (!value) return;
     setSkills((prev) =>
