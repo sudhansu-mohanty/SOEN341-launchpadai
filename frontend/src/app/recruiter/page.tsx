@@ -530,8 +530,9 @@ export default function RecruiterDashboardPage() {
                 {fieldErrors.title && <p className="mt-1 text-xs text-red-400">{fieldErrors.title}</p>}
               </div>
               <div>
-                <label className="mb-1 block text-xs text-zinc-400">Company *</label>
+                <label htmlFor="posting-company" className="mb-1 block text-xs text-zinc-400">Company *</label>
                 <input
+                  id="posting-company"
                   className={inputClass}
                   value={form.company}
                   onChange={(e) => updateField("company", e.target.value)}
