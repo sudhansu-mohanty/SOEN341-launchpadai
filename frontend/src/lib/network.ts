@@ -77,12 +77,25 @@ function removeParentheses(text: string): string {
 // Turn the job title to something clean and simple for searching
 // ex.: "Software Developer I (Full Time) - Canada" -> "Software Developer"
 export function cleanTitle(title: string): string {
-  return removeParentheses(title)       // drop "(Full Time)"
+  const cleaned = removeParentheses(title) // drop "(Full Time)"
     .replace(/\s[-–—|].*$/, "")         // drop " - Canada"
     .replace(/\s+/g, " ")
-    .trim()
-    .replace(/\s+(I{1,3}|IV|V|\d)$/i, "") // drop trailing level: I, II, III
     .trim();
+  return removeTrailingLevel(cleaned).trim(); // drop trailing level: I, II, III
+}
+
+const LEVELS = new Set(["I", "II", "III", "IV", "V"]);
+
+// Drops a last word like "II" or "3" from text whose words are separated by single spaces.
+// Checks only the last word instead of using a regex, so long titles can't make it slow.
+function removeTrailingLevel(text: string): string {
+  const lastSpace = text.lastIndexOf(" ");
+  if (lastSpace === -1) return text;
+  const word = text.slice(lastSpace + 1);
+  const isDigit = word.length === 1 && word >= "0" && word <= "9";
+  // Only uppercases plain i and v, so letters from other alphabets aren't mistaken for levels
+  const upper = word.replace(/[iv]/g, (c) => c.toUpperCase());
+  return LEVELS.has(upper) || isDigit ? text.slice(0, lastSpace) : text;
 }
 
 
