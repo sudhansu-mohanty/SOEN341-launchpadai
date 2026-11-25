@@ -138,7 +138,10 @@ export default function RecruiterDashboardPage() {
       setUserId(user.id);
       await loadJobs(user.id);
     }
-    init();
+    init().catch((err) => {
+      setError(err instanceof Error ? err.message : "Could not load your postings.");
+      setLoading(false);
+    });
   }, [router, loadJobs]);
 
   useEffect(() => {
