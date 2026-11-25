@@ -338,7 +338,7 @@ setMessage("Your profile has been saved.");
               />
             </div>
 
-            ---
+          
 {role === "recruiter" ? (
   <>
     <div>
