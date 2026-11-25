@@ -519,8 +519,9 @@ export default function RecruiterDashboardPage() {
  
             <div className="mt-6 space-y-4">
               <div>
-                <label className="mb-1 block text-xs text-zinc-400">Title *</label>
+                <label htmlFor="posting-title" className="mb-1 block text-xs text-zinc-400">Title *</label>
                 <input
+                  id="posting-title"
                   className={inputClass}
                   value={form.title}
                   onChange={(e) => updateField("title", e.target.value)}
