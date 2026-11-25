@@ -13,14 +13,17 @@ export default function DashboardPage() {
   const router = useRouter();
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) {
-        router.push("/login");
-      } else {
-        setUser(data.user);
-        setLoading(false);
-      }
-    });
+    supabase.auth
+      .getUser()
+      .then(({ data }) => {
+        if (!data.user) {
+          router.push("/login");
+        } else {
+          setUser(data.user);
+          setLoading(false);
+        }
+      })
+      .catch(() => router.push("/login"));
   }, [router]);
 
   if (loading) {
