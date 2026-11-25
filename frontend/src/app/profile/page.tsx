@@ -338,21 +338,7 @@ setMessage("Your profile has been saved.");
               />
             </div>
 
-            <div>
-              <label htmlFor="headline" className={labelClass}>
-                Professional headline
-              </label>
-              <input
-                id="headline"
-                maxLength={150}
-                value={form.headline}
-                onChange={(e) => updateField("headline", e.target.value)}
-                placeholder="Software Engineering Student"
-                className={inputClass}
-              />
-            </div>
-
-            
+          
 {role === "recruiter" ? (
   <>
     <div>
@@ -480,12 +466,20 @@ setMessage("Your profile has been saved.");
   </>
 ) : (
   <>
-    {/* Keep all original job seeker fields here */}
-  </>
-)}
-
-
-            <div>
+    <div>
+              <label htmlFor="headline" className={labelClass}>
+                Professional headline
+              </label>
+              <input
+                id="headline"
+                maxLength={150}
+                value={form.headline}
+                onChange={(e) => updateField("headline", e.target.value)}
+                placeholder="Software Engineering Student"
+                className={inputClass}
+              />
+            </div>
+    <div>
               <label htmlFor="location" className={labelClass}>
                 Location
               </label>
@@ -514,7 +508,7 @@ setMessage("Your profile has been saved.");
               />
             </div>
 
-            <div>
+  <div>
               <h2 className="text-lg font-semibold">Skills and experience</h2>
               <p className="mt-1 text-sm text-zinc-500">
                 Separate skills with commas.
@@ -535,7 +529,7 @@ setMessage("Your profile has been saved.");
               />
             </div>
 
-            <div>
+      <div>
               <label htmlFor="education" className={labelClass}>
                 Education
               </label>
@@ -565,7 +559,7 @@ setMessage("Your profile has been saved.");
               />
             </div>
 
-            <div>
+      <div>
               <h2 className="text-lg font-semibold">Professional links</h2>
             </div>
 
@@ -584,7 +578,7 @@ setMessage("Your profile has been saved.");
               />
             </div>
 
-            <div>
+      <div>
               <label htmlFor="linkedin_url" className={labelClass}>
                 LinkedIn URL
               </label>
@@ -599,6 +593,9 @@ setMessage("Your profile has been saved.");
               />
             </div>
 
+  
+  </>
+)}
             {error && (
               <p role="alert" className="rounded-lg bg-red-500/10 p-3 text-sm text-red-300">
                 {error}
