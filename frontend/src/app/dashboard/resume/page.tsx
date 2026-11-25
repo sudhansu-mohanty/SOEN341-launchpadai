@@ -110,7 +110,7 @@ const replaceInputRef = useRef<HTMLInputElement | null>(null);
 
   const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) addFile(file);
+    if (file) void addFile(file);
     if (inputRef.current) inputRef.current.value = "";
   };
 
