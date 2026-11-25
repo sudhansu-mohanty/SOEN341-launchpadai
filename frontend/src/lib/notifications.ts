@@ -55,6 +55,8 @@ export function subscribeToNotifications(
     .subscribe();
 
   return () => {
-    supabase.removeChannel(channel);
+    supabase
+      .removeChannel(channel)
+      .catch((err) => console.error("Could not stop listening for notifications:", err));
   };
 }
