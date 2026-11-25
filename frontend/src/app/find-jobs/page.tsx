@@ -94,7 +94,7 @@ export default function FindJobsPage() {
         }))
       );
     }
-    loadPostedJobs();
+    loadPostedJobs().catch((err) => console.error("Could not load posted jobs:", err));
   }, []);
 
   // Saved jobs (Supabase "saved_jobs" table) for the logged-in job seeker.
