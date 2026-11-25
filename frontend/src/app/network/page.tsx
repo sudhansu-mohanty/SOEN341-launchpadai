@@ -55,15 +55,19 @@ function NetworkContent() {
   useEffect(() => {
     if (!company) return;
     let cancelled = false;
-    fetchNetworkContacts(company, title).then((r) => {
-      if (cancelled) return;
-      if (r === null) {
-        setStatus("error");
-      } else {
-        setResult(r);
-        setStatus("done");
-      }
-    });
+    fetchNetworkContacts(company, title)
+      .then((r) => {
+        if (cancelled) return;
+        if (r === null) {
+          setStatus("error");
+        } else {
+          setResult(r);
+          setStatus("done");
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setStatus("error");
+      });
     return () => {
       cancelled = true;
     };
