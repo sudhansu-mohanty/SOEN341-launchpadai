@@ -128,7 +128,7 @@ const replaceInputRef = useRef<HTMLInputElement | null>(null);
     e.preventDefault();
     setDragging(false);
     const file = e.dataTransfer.files?.[0];
-    if (file) addFile(file);
+    if (file) void addFile(file);
   };
 
   const formatSize = (bytes: number) => {
