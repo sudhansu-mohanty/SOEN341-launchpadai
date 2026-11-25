@@ -568,8 +568,9 @@ export default function RecruiterDashboardPage() {
                 {fieldErrors.workplace_type && <p className="mt-1 text-xs text-red-400">{fieldErrors.workplace_type}</p>}
               </div>
               <div>
-                <label className="mb-1 block text-xs text-zinc-400">Description *</label>
+                <label htmlFor="posting-description" className="mb-1 block text-xs text-zinc-400">Description *</label>
                 <textarea
+                  id="posting-description"
                   className={inputClass}
                   rows={5}
                   value={form.description}
