@@ -112,7 +112,7 @@ export default function FindJobsPage() {
       }
       setSavedJobs((data as { job: Job }[]).map((row) => row.job));
     }
-    loadSavedJobs();
+    loadSavedJobs().catch((err) => console.error("Could not load saved jobs:", err));
   }, []);
 
   const savedIds = useMemo(() => new Set(savedJobs.map((j) => j.id)), [savedJobs]);
