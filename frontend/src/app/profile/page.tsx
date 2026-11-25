@@ -338,20 +338,6 @@ setMessage("Your profile has been saved.");
               />
             </div>
 
-            <div>
-              <label htmlFor="headline" className={labelClass}>
-                Professional headline
-              </label>
-              <input
-                id="headline"
-                maxLength={150}
-                value={form.headline}
-                onChange={(e) => updateField("headline", e.target.value)}
-                placeholder="Software Engineering Student"
-                className={inputClass}
-              />
-            </div>
-
             ---
 {role === "recruiter" ? (
   <>
@@ -480,6 +466,19 @@ setMessage("Your profile has been saved.");
   </>
 ) : (
   <>
+    <div>
+              <label htmlFor="headline" className={labelClass}>
+                Professional headline
+              </label>
+              <input
+                id="headline"
+                maxLength={150}
+                value={form.headline}
+                onChange={(e) => updateField("headline", e.target.value)}
+                placeholder="Software Engineering Student"
+                className={inputClass}
+              />
+            </div>
     <div>
               <label htmlFor="location" className={labelClass}>
                 Location
