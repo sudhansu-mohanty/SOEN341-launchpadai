@@ -14,6 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # SonarQube Cloud needs the full history
 
       - uses: actions/setup-node@v4
         with:
@@ -38,8 +40,16 @@ jobs:
         working-directory: frontend
 
       - name: Coverage
-        run: npx vitest run --coverage
+        run: |
+          npx vitest run --coverage --coverage.reporter=text --coverage.reporter=lcov
+          # Sonar runs from the repo root, so point the report at frontend/
+          sed -i 's|^SF:|SF:frontend/|' coverage/lcov.info
         working-directory: frontend
+
+      - name: SonarQube Cloud scan
+        uses: SonarSource/sonarqube-scan-action@v8
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: Build
         run: npm run build
