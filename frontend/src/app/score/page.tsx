@@ -6,13 +6,16 @@ import { useScore } from "@/context/ScoreContext";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { fetchExternalJobs, SAMPLE_JOBS, formatSalary, WORKPLACE_LABELS } from "@/lib/jobs";
+import type { Job } from "@/types";
 
-type Tab = "overview" | "breakdown" | "resume";
+type Tab = "overview" | "breakdown" | "resume" | "matches";
 
 const tabs: { id: Tab; label: string }[] = [
   { id: "overview", label: "Overview" },
   { id: "breakdown", label: "Score Breakdown" },
   { id: "resume", label: "Resume Details" },
+  { id: "matches", label: "Job Matches" },
 ];
 
 function useAnimatedNumber(target: number, duration = 900) {
@@ -552,6 +555,215 @@ function EducationSubTab() {
   );
 }
 
+// --- Job Matching helpers ---
+
+type ScoredJob = Job & { matchScore: number };
+
+function computeMatchScore(job: Job, skills: string[]): number {
+  if (skills.length === 0) return 0;
+  const haystack = `${job.title} ${job.description}`.toLowerCase();
+  const matched = skills.filter((s) => haystack.includes(s.toLowerCase())).length;
+  return Math.round((matched / skills.length) * 100);
+}
+
+function deriveSearchQuery(data: ReturnType<typeof useScore>["data"]): string {
+  if (!data) return "software engineer";
+  const experience = data.structured_resume?.experience as Record<string, unknown>[];
+  const topTitle =
+    Array.isArray(experience) && experience.length > 0
+      ? String(experience[0].title || experience[0].role || experience[0].position || "")
+      : "";
+  const topSkills = (data.structured_resume?.skills ?? []).slice(0, 3).join(" ");
+  return [topTitle, topSkills].filter(Boolean).join(" ").trim() || "software engineer";
+}
+
+function MatchBadge({ score }: { score: number }) {
+  const color =
+    score >= 60
+      ? "border-white/20 text-white bg-white/10"
+      : score >= 30
+        ? "border-white/10 text-zinc-300 bg-white/[0.04]"
+        : "border-white/[0.06] text-zinc-600 bg-transparent";
+  return (
+    <span className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold tracking-tight tabular-nums ${color}`}>
+      {score}% match
+    </span>
+  );
+}
+
+function JobMatchesTab() {
+  const { data } = useScore();
+  const [jobs, setJobs] = useState<ScoredJob[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [fetchError, setFetchError] = useState("");
+  const [fetched, setFetched] = useState(false);
+
+  useEffect(() => {
+    if (!data || fetched) return;
+    setFetched(true);
+    setLoading(true);
+    setFetchError("");
+
+    const allSkills = Array.from(
+      new Set([...(data.structured_resume?.skills ?? []), ...(data.analysis?.skills ?? [])].map((s) => String(s)))
+    );
+    const query = deriveSearchQuery(data);
+
+    void (async () => {
+      try {
+        const scoredSample: ScoredJob[] = SAMPLE_JOBS.map((job) => ({
+          ...job,
+          matchScore: computeMatchScore(job, allSkills),
+        }));
+
+        const external = await fetchExternalJobs(query, "");
+        const scoredExternal: ScoredJob[] = (external ?? []).map((job) => ({
+          ...job,
+          matchScore: computeMatchScore(job, allSkills),
+        }));
+
+        const combined = [...scoredSample, ...scoredExternal]
+          .sort((a, b) => b.matchScore - a.matchScore)
+          .slice(0, 6);
+
+        setJobs(combined);
+      } catch {
+        setFetchError("Could not load job matches.");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [data, fetched]);
+
+  if (!data) return null;
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 py-24">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-white/20 border-t-white" />
+        <p className="text-sm tracking-tight text-zinc-500">Finding matching jobs…</p>
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] px-6 py-8 text-center">
+        <p className="text-sm tracking-tight text-zinc-500">{fetchError}</p>
+      </div>
+    );
+  }
+
+  const allSkills = Array.from(
+    new Set([...(data.structured_resume?.skills ?? []), ...(data.analysis?.skills ?? [])].map((s) => String(s)))
+  );
+
+  return (
+    <div className="grid gap-4" style={{ animation: "fade-up 0.5s cubic-bezier(0.16,1,0.3,1) both" }}>
+      {/* Header */}
+      <div className="relative rounded-2xl border border-white/[0.08] p-1">
+        <GlowingEffect spread={40} glow proximity={64} inactiveZone={0.01} borderWidth={3} disabled={false} />
+        <div className="relative rounded-xl border border-white/5 bg-black px-6 py-5">
+          <h3 className="text-sm font-semibold tracking-tight text-white">Recommended for You</h3>
+          <p className="mt-1 text-xs tracking-tight text-zinc-500">
+            Based on{" "}
+            <span className="text-zinc-300">{allSkills.length} skill{allSkills.length !== 1 ? "s" : ""}</span> and
+            experience parsed from your resume.
+          </p>
+          {allSkills.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {allSkills.slice(0, 8).map((s) => (
+                <span
+                  key={s}
+                  className="rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 text-xs tracking-tight text-zinc-400"
+                >
+                  {s}
+                </span>
+              ))}
+              {allSkills.length > 8 && (
+                <span className="rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 text-xs tracking-tight text-zinc-500">
+                  +{allSkills.length - 8} more
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Job cards */}
+      {jobs.length === 0 ? (
+        <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] px-6 py-12 text-center">
+          <p className="text-sm tracking-tight text-zinc-500">No job matches found. Try uploading a more detailed resume.</p>
+        </div>
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {jobs.map((job, i) => (
+            <div
+              key={job.id}
+              className="relative rounded-2xl border border-white/[0.08] p-1"
+              style={{ animation: `fade-up 0.4s cubic-bezier(0.16,1,0.3,1) ${0.05 + i * 0.07}s both` }}
+            >
+              <GlowingEffect spread={30} glow proximity={48} inactiveZone={0.01} borderWidth={2} disabled={false} />
+              <div className="relative flex h-full flex-col rounded-xl border border-white/5 bg-black p-5">
+                <div className="mb-3 flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <h4 className="truncate text-sm font-semibold tracking-tight text-white">{job.title}</h4>
+                    <p className="mt-0.5 text-xs tracking-tight text-zinc-500">{job.company} · {job.location}</p>
+                  </div>
+                  <MatchBadge score={job.matchScore} />
+                </div>
+
+                <p className="mb-4 line-clamp-2 flex-1 text-xs leading-relaxed tracking-tight text-zinc-500">
+                  {job.description}
+                </p>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="rounded-md border border-white/[0.06] bg-white/[0.02] px-2 py-0.5 text-[10px] tracking-tight text-zinc-500">
+                      {WORKPLACE_LABELS[job.workplace_type]}
+                    </span>
+                    {job.salary_min !== undefined && job.salary_max !== undefined && (
+                      <span className="text-[10px] tracking-tight text-zinc-600">
+                        {formatSalary(job.salary_min, job.salary_max)}
+                      </span>
+                    )}
+                  </div>
+                  {job.apply_url ? (
+                    <a
+                      href={job.apply_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-lg border border-white/10 px-3 py-1.5 text-xs font-medium tracking-tight text-zinc-300 transition-colors hover:border-white/25 hover:text-white"
+                    >
+                      Apply →
+                    </a>
+                  ) : (
+                    <Link
+                      href="/find-jobs"
+                      className="rounded-lg border border-white/10 px-3 py-1.5 text-xs font-medium tracking-tight text-zinc-300 transition-colors hover:border-white/25 hover:text-white"
+                    >
+                      View →
+                    </Link>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="text-center">
+        <Link
+          href="/find-jobs"
+          className="text-xs tracking-tight text-zinc-500 transition-colors hover:text-white"
+        >
+          Browse all jobs →
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 export default function ScorePage() {
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const { data } = useScore();
@@ -615,6 +827,7 @@ export default function ScorePage() {
           {activeTab === "overview" && <OverviewTab />}
           {activeTab === "breakdown" && <BreakdownTab />}
           {activeTab === "resume" && <ResumeDetailsTab />}
+          {activeTab === "matches" && <JobMatchesTab />}
         </div>
 
         <div className="mt-8 text-center">

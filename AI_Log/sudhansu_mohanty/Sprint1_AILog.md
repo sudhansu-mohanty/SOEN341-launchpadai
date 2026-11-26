@@ -307,3 +307,17 @@
 
 **Prompt:**
 > for sprint 3, i used ai for the PDF plumber and integrating to the pages i made? we need to add it in the sprint3_ailog.md check commits and others to find
+
+---
+
+**Date:** 2026-11-24
+
+**Prompt:**
+> Hello, right now after anyone logins it redirects to the dashboard, but from now redirect it to the find-jobs page immediately
+
+---
+
+**Date:** 2026-11-24
+
+**Prompt:**
+> I have to implementAI job matching suggestions that recommends relevant jobs based on user profiles and resumes, i was thinking in the resume report section after the resume is analyzed we add a section to show recommended jobs based on the jobs they experience and what they input in the resume essentially
