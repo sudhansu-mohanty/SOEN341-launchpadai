@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase";
 import { statusLabel, badgeClass } from "@/lib/applicationStatus";
 import { validatePosting, todayString, type PostingErrors } from "@/lib/postingValidation";
 import { postingTab } from "@/lib/postingVisibility";
+import { filterAndSortApplicants, type DateOrder } from "@/lib/applicantFilters";
 
 type JobRow = {
   id: string;
@@ -89,6 +90,8 @@ export default function RecruiterDashboardPage() {
   const [applicants, setApplicants] = useState<Applicant[]>([]);
   const [modalLoading, setModalLoading] = useState(false);
   const [modalError, setModalError] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string[]>([]);
+  const [dateOrder, setDateOrder] = useState<DateOrder>("newest");
 
   const [showCreate, setShowCreate] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -105,6 +108,7 @@ export default function RecruiterDashboardPage() {
   const archivedJobs = jobs.filter((j) => postingTab(j) === "archived");
   const visibleJobs =
     tab === "active" ? activeJobs : tab === "closed" ? closedJobs : archivedJobs;
+    const shownApplicants = filterAndSortApplicants(applicants, statusFilter, dateOrder);
 
   const loadJobs = useCallback(async (uid: string) => {
     const { data, error } = await supabase
@@ -279,6 +283,8 @@ export default function RecruiterDashboardPage() {
     setApplicants([]);
     setModalError("");
     setModalLoading(true);
+    setStatusFilter([]);
+    setDateOrder("newest");
 
     const { data, error } = await supabase
       .from("applications")
@@ -644,14 +650,57 @@ export default function RecruiterDashboardPage() {
             {modalError && (
               <p className="mt-4 text-sm text-red-400">Error: {modalError}</p>
             )}
- 
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-3">
+                {STATUS_OPTIONS.map((s) => (
+                  <label key={s} className="flex items-center gap-1.5 text-xs text-zinc-300">
+                    <input
+                      type="checkbox"
+                      checked={statusFilter.includes(s)}
+                      onChange={() =>
+                        setStatusFilter((prev) =>
+                          prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]
+                        )
+                      }
+                    />
+                    {s}
+                  </label>
+                ))}
+              </div>
+              <label className="flex items-center gap-2 text-xs text-zinc-500">
+                Sort by date
+                <select
+                  value={dateOrder}
+                  onChange={(e) => setDateOrder(e.target.value as DateOrder)}
+                  className="rounded-md border border-white/10 bg-black px-2 py-1.5 text-xs text-white outline-none focus:border-white/30 [color-scheme:dark]"
+                >
+                  <option value="newest">Newest first</option>
+                  <option value="oldest">Oldest first</option>
+                </select>
+              </label>
+            </div>
+            <div className="mt-3 flex items-center justify-between gap-3 text-xs text-zinc-500">
+              <span>
+                Showing {shownApplicants.length} of {applicants.length} applicants
+              </span>
+              {statusFilter.length > 0 && (
+                <button
+                  onClick={() => setStatusFilter([])}
+                  className="rounded-md border border-white/10 px-2.5 py-1 text-xs text-zinc-300 hover:bg-white/5 hover:text-white"
+                >
+                  Clear filters
+                </button>
+              )}
+            </div>
             <div className="mt-6 space-y-3">
               {modalLoading ? (
                 <p className="text-zinc-500">Loading...</p>
               ) : applicants.length === 0 && !modalError ? (
                 <p className="text-zinc-500">No applicants yet.</p>
+              ) : shownApplicants.length === 0 && applicants.length > 0 ? (
+                <p className="text-zinc-500">No applicants match the selected filters.</p>
               ) : (
-                applicants.map((a) => (
+                shownApplicants.map((a) => (
                   <div
                     key={a.id}
                     className="rounded-xl border border-white/5 bg-black p-4"
